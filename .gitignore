@@ -8,3 +8,14 @@ dist/
 *.egg-info/
 .pytest_cache/
 .ruff_cache/
+node_modules/
+exports/
+Untitled
+test_oauth.py
+*.xlsx
+*.xls
+gen_rule_doc.js
+gen_basic_import.py
+export_template.py
+package.json
+package-lock.json
