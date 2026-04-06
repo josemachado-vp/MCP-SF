@@ -1,0 +1,74 @@
+{
+    "best_practices": [
+        {
+            "id": "BP001",
+            "category": "naming",
+            "title": "Use consistent rule naming convention",
+            "description": "Name rules with pattern: BR_{Action}_{Target}_{Scope}. Example: BR_DerivePayGroup_LATAM. This makes rules easy to find and understand.",
+            "severity": "recommended"
+        },
+        {
+            "id": "BP002",
+            "category": "performance",
+            "title": "Minimize conditions per rule",
+            "description": "Break complex rules into multiple simpler rules. Each rule should handle one logical derivation. This improves maintainability and debugging.",
+            "severity": "recommended"
+        },
+        {
+            "id": "BP003",
+            "category": "execution_order",
+            "title": "Order rules by dependency",
+            "description": "Ensure derived fields that are inputs to other rules execute first. Standard order: onInit -> onChange -> onSave -> validate.",
+            "severity": "important"
+        },
+        {
+            "id": "BP004",
+            "category": "testing",
+            "title": "Always test with edge cases",
+            "description": "Test with: empty fields, null values, employees without company, cross-country scenarios, and new hire vs existing employee scenarios.",
+            "severity": "important"
+        },
+        {
+            "id": "BP005",
+            "category": "design",
+            "title": "Use onChange for cascading derivations",
+            "description": "When field A derives field B which derives field C, use onChange for real-time cascading so the user sees updates immediately.",
+            "severity": "recommended"
+        },
+        {
+            "id": "BP006",
+            "category": "design",
+            "title": "Use validate event for blocking validations",
+            "description": "Use the validate event type (not onSave) when you need to block a save with an error message. This separates validation from derivation logic.",
+            "severity": "recommended"
+        },
+        {
+            "id": "BP007",
+            "category": "maintenance",
+            "title": "Document rule purpose and dependencies",
+            "description": "Always add a clear description to each rule. Document which other rules depend on it and what fields it modifies.",
+            "severity": "important"
+        },
+        {
+            "id": "BP008",
+            "category": "scope",
+            "title": "Scope rules by country when possible",
+            "description": "For multi-country implementations, create separate rules per country or country group. This makes maintenance easier and avoids unintended side effects.",
+            "severity": "recommended"
+        },
+        {
+            "id": "BP009",
+            "category": "performance",
+            "title": "Avoid circular dependencies",
+            "description": "Never create rules where Rule A sets Field X which triggers Rule B which sets Field Y which triggers Rule A. This causes infinite loops.",
+            "severity": "critical"
+        },
+        {
+            "id": "BP010",
+            "category": "design",
+            "title": "Use ELSE branches for completeness",
+            "description": "Always include an ELSE or default branch to handle unexpected values. This prevents fields from being left empty when conditions don't match.",
+            "severity": "recommended"
+        }
+    ]
+}

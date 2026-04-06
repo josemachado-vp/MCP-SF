@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:glama.ai)",
+      "WebFetch(domain:lobehub.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.getguru.com)",
+      "WebFetch(domain:community.sap.com)",
+      "WebFetch(domain:gofastmcp.com)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:userapps.support.sap.com)",
+      "WebFetch(domain:help.sap.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:blog.bajonczak.com)",
+      "WebFetch(domain:help.flowgear.net)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:mcpcat.io)",
+      "WebFetch(domain:innosense-49134.medium.com)",
+      "WebFetch(domain:docs.informatica.com)",
+      "WebFetch(domain:www.lorenzo-datasolutions.com)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
+      "Bash(node:*)",
+      "Bash(uv sync:*)",
+      "Bash(where:*)",
+      "Bash(cmd.exe:*)",
+      "Bash(export:*)",
+      "mcp__sf-business-rules__list_entities",
+      "Bash(echo System env:*)",
+      "Bash(uv run:*)",
+      "mcp__sf-business-rules__query_odata",
+      "Read(//c/Users/JoséMachado/.claude/**)",
+      "Read(//c/Users/JoséMachado/AppData/Roaming/Claude/**)",
+      "mcp__sf-business-rules__get_picklist_values",
+      "mcp__sf-business-rules__get_entity_metadata",
+      "mcp__sf-business-rules__validate_rule_fields",
+      "Bash(uv add openpyxl)",
+      "Bash(npm install docx)",
+      "Bash(py \"C:/Users/JoséMachado/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/0a72bb2f-76f2-4eb5-bd7d-e68d0f8a06e3/2a279417-77ec-4cbc-8556-3fe4aa7e51c1/skills/docx/scripts/office/validate.py\" \"C:/Users/JoséMachado/Desktop/Proyectos/MCP SF/docs/Guia_MCP_SuccessFactors.docx\")",
+      "mcp__sf-business-rules__search_employees",
+      "mcp__sf-business-rules__list_business_rules",
+      "mcp__sf-business-rules__list_mdf_objects",
+      "mcp__sf-business-rules__get_mdf_object_definition"
+    ]
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "sf-business-rules"
+  ]
+}

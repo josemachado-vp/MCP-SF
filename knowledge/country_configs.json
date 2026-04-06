@@ -1,0 +1,276 @@
+{
+    "countries": {
+        "COL": {
+            "name": "Colombia",
+            "entity": "PerGlobalInfoCOL",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "Tipo de documento (CC, CE, TI, PA, etc.)", "label": "Document Type", "picklist": "colDocType"},
+                {"field": "genericString2", "description": "Número de documento", "label": "Document Number"},
+                {"field": "genericString3", "description": "Ciudad de expedición", "label": "City of Issue"},
+                {"field": "genericDate1", "description": "Fecha de expedición del documento", "label": "Document Issue Date"},
+                {"field": "genericString6", "description": "EPS (Entidad Promotora de Salud)", "label": "EPS", "picklist": "colEPS"},
+                {"field": "genericString7", "description": "AFP (Administradora de Fondos de Pensiones)", "label": "AFP", "picklist": "colAFP"},
+                {"field": "genericString8", "description": "ARL (Administradora de Riesgos Laborales)", "label": "ARL", "picklist": "colARL"},
+                {"field": "genericString9", "description": "Caja de Compensación", "label": "Compensation Fund", "picklist": "colCajaComp"},
+                {"field": "genericString10", "description": "Fondo de Cesantías", "label": "Severance Fund", "picklist": "colFondoCes"},
+                {"field": "genericNumber1", "description": "Estrato socioeconómico (1-6)", "label": "Socioeconomic Level"}
+            ],
+            "common_picklists": ["colDocType", "colEPS", "colAFP", "colARL", "colCajaComp", "colFondoCes", "colBloodType"],
+            "compliance_notes": [
+                "Document type and number are mandatory for payroll",
+                "EPS, AFP, ARL, Caja de Compensación are mandatory for social security reporting (PILA)",
+                "Socioeconomic level (estrato) is required for some benefit calculations",
+                "RUT number may be required for contractors"
+            ],
+            "typical_rules": [
+                "Auto-derive ARL risk level from job code",
+                "Set default Caja de Compensación based on company/location",
+                "Validate document number format based on document type"
+            ]
+        },
+        "MEX": {
+            "name": "Mexico",
+            "entity": "PerGlobalInfoMEX",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "CURP (Clave Única de Registro de Población)", "label": "CURP"},
+                {"field": "genericString2", "description": "RFC (Registro Federal de Contribuyentes)", "label": "RFC"},
+                {"field": "genericString3", "description": "NSS (Número de Seguridad Social / IMSS)", "label": "NSS/IMSS"},
+                {"field": "genericString4", "description": "CLABE interbancaria (18 dígitos)", "label": "CLABE"},
+                {"field": "genericString6", "description": "Tipo de régimen fiscal", "label": "Tax Regime"},
+                {"field": "genericString7", "description": "Tipo de contrato SAT", "label": "SAT Contract Type"},
+                {"field": "genericString8", "description": "Tipo de jornada SAT", "label": "SAT Work Shift Type"},
+                {"field": "genericNumber1", "description": "SDI (Salario Diario Integrado)", "label": "SDI"},
+                {"field": "genericDate1", "description": "Fecha de alta IMSS", "label": "IMSS Registration Date"}
+            ],
+            "common_picklists": ["mexDocType", "mexTaxRegime", "mexContractType", "mexWorkShiftType", "mexState"],
+            "compliance_notes": [
+                "CURP is 18 characters, RFC is 13 characters (12 for companies)",
+                "NSS/IMSS number is mandatory for IMSS reporting",
+                "CLABE must be 18 digits for electronic payroll deposit",
+                "CFDI 4.0 requires RFC, tax regime, and postal code",
+                "SDI must be calculated and reported to IMSS",
+                "SAT contract type and work shift type required for CFDI payroll receipts"
+            ],
+            "typical_rules": [
+                "Validate CURP format (18 chars alphanumeric pattern)",
+                "Validate RFC format (13 chars with check digit)",
+                "Auto-calculate SDI based on compensation components",
+                "Derive SAT contract type from employment type"
+            ]
+        },
+        "PER": {
+            "name": "Peru",
+            "entity": "PerGlobalInfoPER",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "Tipo de documento (DNI, CE, Pasaporte)", "label": "Document Type", "picklist": "perDocType"},
+                {"field": "genericString2", "description": "Número de documento", "label": "Document Number"},
+                {"field": "genericString3", "description": "AFP (Administradora de Fondo de Pensiones)", "label": "AFP", "picklist": "perAFP"},
+                {"field": "genericString4", "description": "Tipo de AFP (SNP/SPP)", "label": "Pension System Type", "picklist": "perPensionType"},
+                {"field": "genericString5", "description": "CUSPP (Código Único del Sistema Privado de Pensiones)", "label": "CUSPP"},
+                {"field": "genericString6", "description": "EsSalud / EPS", "label": "Health Insurance"},
+                {"field": "genericString7", "description": "Régimen laboral", "label": "Labor Regime", "picklist": "perLaborRegime"},
+                {"field": "genericNumber1", "description": "Número de dependientes para IR", "label": "Tax Dependents"}
+            ],
+            "common_picklists": ["perDocType", "perAFP", "perPensionType", "perLaborRegime", "perEPS"],
+            "compliance_notes": [
+                "DNI is 8 digits, CE is 12 characters",
+                "AFP or SNP selection is mandatory — affects pension contributions",
+                "CUSPP is required for SPP (private pension) employees",
+                "Labor regime determines benefits (general, MYPE, agricultural, etc.)",
+                "T-Registro (SUNAT) requires document type, number, and pension details",
+                "CTS (Compensación por Tiempo de Servicios) depends on labor regime"
+            ],
+            "typical_rules": [
+                "Validate DNI format (8 digits)",
+                "Require CUSPP when pension type is SPP",
+                "Set default EsSalud contribution based on labor regime",
+                "Derive Gratificación eligibility from labor regime"
+            ]
+        },
+        "CHL": {
+            "name": "Chile",
+            "entity": "PerGlobalInfoCHL",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "RUT (Rol Único Tributario)", "label": "RUT"},
+                {"field": "genericString3", "description": "AFP", "label": "AFP", "picklist": "chlAFP"},
+                {"field": "genericString4", "description": "Isapre / FONASA", "label": "Health Insurance", "picklist": "chlIsapre"},
+                {"field": "genericString5", "description": "Tipo de contrato", "label": "Contract Type", "picklist": "chlContractType"},
+                {"field": "genericNumber1", "description": "Porcentaje plan Isapre", "label": "Isapre Plan %"}
+            ],
+            "common_picklists": ["chlAFP", "chlIsapre", "chlContractType"],
+            "compliance_notes": [
+                "RUT format: XX.XXX.XXX-X (with verification digit)",
+                "AFP is mandatory for all employees",
+                "Health: either FONASA (public) or Isapre (private)",
+                "Contract type affects severance calculations (indefinido vs plazo fijo)"
+            ],
+            "typical_rules": [
+                "Validate RUT format and check digit",
+                "Require Isapre plan percentage when health is Isapre (not FONASA)",
+                "Set AFP default based on company policy"
+            ]
+        },
+        "ARG": {
+            "name": "Argentina",
+            "entity": "PerGlobalInfoARG",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "CUIL (Clave Única de Identificación Laboral)", "label": "CUIL"},
+                {"field": "genericString2", "description": "DNI", "label": "DNI"},
+                {"field": "genericString3", "description": "Obra Social", "label": "Health Insurance", "picklist": "argObraSocial"},
+                {"field": "genericString4", "description": "Sindicato/Gremio", "label": "Union", "picklist": "argSindicato"},
+                {"field": "genericString5", "description": "Convenio Colectivo de Trabajo", "label": "CCT", "picklist": "argCCT"},
+                {"field": "genericString6", "description": "Categoría sindical", "label": "Union Category"}
+            ],
+            "common_picklists": ["argObraSocial", "argSindicato", "argCCT", "argDocType"],
+            "compliance_notes": [
+                "CUIL is 11 digits (XX-XXXXXXXX-X format)",
+                "Obra Social is mandatory for social security",
+                "CCT (Convenio Colectivo) determines salary scales and benefits",
+                "AFIP reporting requires CUIL and employment category",
+                "Sindicato determines union dues deductions"
+            ],
+            "typical_rules": [
+                "Validate CUIL format (11 digits with check)",
+                "Auto-derive Obra Social from Sindicato",
+                "Set CCT based on job code/category"
+            ]
+        },
+        "BRA": {
+            "name": "Brazil",
+            "entity": "PerGlobalInfoBRA",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "CPF (Cadastro de Pessoa Física)", "label": "CPF"},
+                {"field": "genericString2", "description": "PIS/PASEP", "label": "PIS/PASEP"},
+                {"field": "genericString3", "description": "CTPS (Carteira de Trabalho)", "label": "CTPS Number"},
+                {"field": "genericString4", "description": "CTPS Serie", "label": "CTPS Series"},
+                {"field": "genericString5", "description": "RG (Registro Geral)", "label": "RG"},
+                {"field": "genericString6", "description": "CBO (Classificação Brasileira de Ocupações)", "label": "CBO Code"},
+                {"field": "genericString7", "description": "Sindicato", "label": "Union", "picklist": "braSindicato"}
+            ],
+            "common_picklists": ["braDocType", "braSindicato", "braState"],
+            "compliance_notes": [
+                "CPF is 11 digits with 2 check digits",
+                "PIS/PASEP is mandatory for FGTS/INSS reporting",
+                "CTPS is the official work permit document",
+                "CBO code is required for eSocial/RAIS reporting",
+                "eSocial requires extensive data validation",
+                "FGTS deposit is 8% of salary, mandatory"
+            ],
+            "typical_rules": [
+                "Validate CPF format and check digits",
+                "Validate PIS format",
+                "Auto-derive CBO from job code",
+                "Set FGTS account based on company"
+            ]
+        },
+        "USA": {
+            "name": "United States",
+            "entity": "PerGlobalInfoUSA",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "SSN (Social Security Number)", "label": "SSN"},
+                {"field": "genericString3", "description": "I-9 Work Authorization", "label": "Work Auth Status"},
+                {"field": "genericString4", "description": "EEO Category", "label": "EEO Category", "picklist": "usaEEOCat"},
+                {"field": "genericString5", "description": "FLSA Status", "label": "FLSA", "picklist": "usaFLSA"},
+                {"field": "genericString6", "description": "Veteran Status", "label": "Veteran Status", "picklist": "usaVetStatus"}
+            ],
+            "common_picklists": ["usaEEOCat", "usaFLSA", "usaVetStatus", "usaEthnicity"],
+            "compliance_notes": [
+                "SSN format: XXX-XX-XXXX",
+                "EEO-1 reporting requires EEO category and ethnicity",
+                "FLSA status (exempt/non-exempt) affects overtime eligibility",
+                "ACA (Affordable Care Act) tracking requires hours worked",
+                "I-9 verification must be completed within 3 days of hire"
+            ],
+            "typical_rules": [
+                "Validate SSN format",
+                "Auto-derive FLSA status from job code/pay grade",
+                "Set EEO category based on job function"
+            ]
+        },
+        "ESP": {
+            "name": "Spain",
+            "entity": "PerGlobalInfoESP",
+            "required_fields": [
+                {"field": "personIdExternal", "description": "Person ID", "type": "key"},
+                {"field": "startDate", "description": "Effective start date", "type": "key"},
+                {"field": "genericString1", "description": "NIF/NIE", "label": "NIF/NIE"},
+                {"field": "genericString2", "description": "Número de afiliación SS", "label": "SS Affiliation Number"},
+                {"field": "genericString3", "description": "Tipo de contrato", "label": "Contract Type", "picklist": "espContractType"},
+                {"field": "genericString4", "description": "Grupo de cotización", "label": "Contribution Group", "picklist": "espCotizGroup"},
+                {"field": "genericString5", "description": "Convenio colectivo", "label": "Collective Agreement", "picklist": "espConvenio"}
+            ],
+            "common_picklists": ["espContractType", "espCotizGroup", "espConvenio", "espDocType"],
+            "compliance_notes": [
+                "NIF format: 8 digits + letter; NIE format: X/Y/Z + 7 digits + letter",
+                "SS affiliation number is mandatory for Seguridad Social reporting",
+                "Contract type codes must match Servicio Público de Empleo requirements",
+                "Contribution group determines SS contribution brackets"
+            ],
+            "typical_rules": [
+                "Validate NIF/NIE format and check letter",
+                "Derive contribution group from job code/category",
+                "Set contract type defaults based on employment type"
+            ]
+        }
+    },
+    "migration_entity_order": [
+        {"order": 1, "entity": "FOCompany", "description": "Companies / Legal Entities", "dependencies": []},
+        {"order": 2, "entity": "FOBusinessUnit", "description": "Business Units", "dependencies": ["FOCompany"]},
+        {"order": 3, "entity": "FODivision", "description": "Divisions", "dependencies": ["FOCompany"]},
+        {"order": 4, "entity": "FODepartment", "description": "Departments", "dependencies": ["FOCompany", "FODivision"]},
+        {"order": 5, "entity": "FOCostCenter", "description": "Cost Centers", "dependencies": ["FOCompany"]},
+        {"order": 6, "entity": "FOLocation", "description": "Locations", "dependencies": ["FOCompany"]},
+        {"order": 7, "entity": "FOJobCode", "description": "Job Codes/Classifications", "dependencies": []},
+        {"order": 8, "entity": "FOPayGrade", "description": "Pay Grades", "dependencies": []},
+        {"order": 9, "entity": "Position", "description": "Positions", "dependencies": ["FOCompany", "FODepartment", "FODivision", "FOJobCode"]},
+        {"order": 10, "entity": "User", "description": "User accounts", "dependencies": []},
+        {"order": 11, "entity": "EmpEmployment", "description": "Employment records", "dependencies": ["User"]},
+        {"order": 12, "entity": "PerPersonal", "description": "Personal Information", "dependencies": ["User"]},
+        {"order": 13, "entity": "PerNationalId", "description": "National IDs", "dependencies": ["User"]},
+        {"order": 14, "entity": "PerEmail", "description": "Email addresses", "dependencies": ["User"]},
+        {"order": 15, "entity": "PerPhone", "description": "Phone numbers", "dependencies": ["User"]},
+        {"order": 16, "entity": "EmpJob", "description": "Job Information", "dependencies": ["User", "EmpEmployment", "FOCompany", "FODepartment", "FODivision", "FOLocation", "FOJobCode", "Position"]},
+        {"order": 17, "entity": "EmpCompensation", "description": "Compensation", "dependencies": ["User", "EmpJob"]},
+        {"order": 18, "entity": "EmpJobRelationships", "description": "Job Relationships", "dependencies": ["User", "EmpJob"]},
+        {"order": 19, "entity": "PerGlobalInfo", "description": "Country-specific info", "dependencies": ["User", "PerPersonal"]},
+        {"order": 20, "entity": "TimeAccount", "description": "Time Accounts", "dependencies": ["User", "EmpEmployment"]},
+        {"order": 21, "entity": "EmployeeTime", "description": "Time Off records", "dependencies": ["User", "TimeAccount"]}
+    ],
+    "golive_checks": {
+        "critical": [
+            {"id": "GL001", "name": "Employees without active job", "entity": "EmpEmployment", "check": "Active employment records without corresponding active EmpJob", "query_hint": "Cross-reference EmpEmployment (active) vs EmpJob (emplStatus='A')"},
+            {"id": "GL002", "name": "Orphan job records", "entity": "EmpJob", "check": "EmpJob records with userId not in User entity", "query_hint": "EmpJob userIds not found in User"},
+            {"id": "GL003", "name": "Invalid FO references", "entity": "EmpJob", "check": "EmpJob referencing non-existent or inactive FOs (company, department, etc.)", "query_hint": "EmpJob FO codes not in active FO records"},
+            {"id": "GL004", "name": "Missing key dates", "entity": "EmpEmployment", "check": "Employment records without startDate", "query_hint": "EmpEmployment where startDate is empty"},
+            {"id": "GL005", "name": "Duplicate active records", "entity": "EmpJob", "check": "Multiple active EmpJob records for same userId on same date", "query_hint": "EmpJob grouped by userId with count > 1 on current date"}
+        ],
+        "important": [
+            {"id": "GL010", "name": "Vacant positions with incumbents", "entity": "Position", "check": "Positions marked vacant but have active incumbents", "query_hint": "Position vacant=true with active EmpJob referencing it"},
+            {"id": "GL011", "name": "Manager self-reference", "entity": "EmpJob", "check": "Employees who are their own manager", "query_hint": "EmpJob where userId = managerId"},
+            {"id": "GL012", "name": "Missing manager", "entity": "EmpJob", "check": "Active employees with no managerId assigned", "query_hint": "EmpJob emplStatus='A' and managerId is empty"},
+            {"id": "GL013", "name": "Inactive FOs in use", "entity": "FODepartment", "check": "Foundation Objects with status='I' still referenced by active employees", "query_hint": "Cross-ref inactive FOs with active EmpJob"},
+            {"id": "GL014", "name": "Date gaps in effective-dated records", "entity": "EmpJob", "check": "Gaps between endDate of one record and startDate of next", "query_hint": "EmpJob ordered by userId,startDate looking for gaps"},
+            {"id": "GL015", "name": "Future-dated terminations", "entity": "EmpJob", "check": "Termination records with past dates that haven't been processed", "query_hint": "EmpJob emplStatus='T' with startDate in the past"}
+        ],
+        "recommended": [
+            {"id": "GL020", "name": "Email completeness", "entity": "PerEmail", "check": "Active employees without email address", "query_hint": "Active users not in PerEmail"},
+            {"id": "GL021", "name": "Phone completeness", "entity": "PerPhone", "check": "Active employees without phone number", "query_hint": "Active users not in PerPhone"},
+            {"id": "GL022", "name": "Country-specific completeness", "entity": "PerGlobalInfo", "check": "Employees missing required country-specific fields", "query_hint": "Per country_configs.json required_fields"},
+            {"id": "GL023", "name": "Compensation completeness", "entity": "EmpCompensation", "check": "Active employees without compensation record", "query_hint": "Active EmpJob userIds not in EmpCompensation"}
+        ]
+    }
+}

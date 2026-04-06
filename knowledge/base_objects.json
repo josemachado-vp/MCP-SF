@@ -1,0 +1,119 @@
+{
+    "base_objects": [
+        {
+            "id": "JobInformationModel",
+            "name": "Job Information Model",
+            "description": "Model for Job Information portlet. Most commonly used base object for EC rules.",
+            "primary_entity": "EmpJob",
+            "common_fields": [
+                {"name": "company", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "department", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "division", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "location", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "jobCode", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "position", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "costCenter", "entity": "EmpJob", "type": "navigation", "picklist": false, "picklist_id": null},
+                {"name": "payGroup", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "payGroup"},
+                {"name": "employeeClass", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "employeeClass"},
+                {"name": "emplStatus", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "emplStatus"},
+                {"name": "eventReason", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "eventReason"},
+                {"name": "managerId", "entity": "EmpJob", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "countryOfCompany", "entity": "EmpJob", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "employmentType", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "employmentType"},
+                {"name": "flsaStatus", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "flsaStatus"},
+                {"name": "regularTemp", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "regularTemp"},
+                {"name": "timezone", "entity": "EmpJob", "type": "Edm.String", "picklist": true, "picklist_id": "timezone"},
+                {"name": "workscheduleCode", "entity": "EmpJob", "type": "Edm.String", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Job Information", "Compensation Information", "Job Relationships"]
+        },
+        {
+            "id": "CompInfoModel",
+            "name": "Compensation Information Model",
+            "description": "Model for Compensation Information portlet.",
+            "primary_entity": "EmpCompensation",
+            "common_fields": [
+                {"name": "payGroup", "entity": "EmpCompensation", "type": "Edm.String", "picklist": true, "picklist_id": "payGroup"},
+                {"name": "payType", "entity": "EmpCompensation", "type": "Edm.String", "picklist": true, "picklist_id": "payType"},
+                {"name": "payrollId", "entity": "EmpCompensation", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "compaRatio", "entity": "EmpCompensation", "type": "Edm.Decimal", "picklist": false, "picklist_id": null},
+                {"name": "rangePenetration", "entity": "EmpCompensation", "type": "Edm.Decimal", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Compensation Information"]
+        },
+        {
+            "id": "PersonalInfoModel",
+            "name": "Personal Information Model",
+            "description": "Model for Personal Information portlet.",
+            "primary_entity": "PerPersonal",
+            "common_fields": [
+                {"name": "firstName", "entity": "PerPersonal", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "lastName", "entity": "PerPersonal", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "gender", "entity": "PerPersonal", "type": "Edm.String", "picklist": true, "picklist_id": "gender"},
+                {"name": "nationality", "entity": "PerPersonal", "type": "Edm.String", "picklist": true, "picklist_id": "nationality"},
+                {"name": "maritalStatus", "entity": "PerPersonal", "type": "Edm.String", "picklist": true, "picklist_id": "maritalStatus"}
+            ],
+            "hris_elements": ["Personal Information"]
+        },
+        {
+            "id": "EmploymentInfoModel",
+            "name": "Employment Information Model",
+            "description": "Model for Employment Details portlet.",
+            "primary_entity": "EmpEmployment",
+            "common_fields": [
+                {"name": "startDate", "entity": "EmpEmployment", "type": "Edm.DateTime", "picklist": false, "picklist_id": null},
+                {"name": "endDate", "entity": "EmpEmployment", "type": "Edm.DateTime", "picklist": false, "picklist_id": null},
+                {"name": "seniorityDate", "entity": "EmpEmployment", "type": "Edm.DateTime", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Employment Details"]
+        },
+        {
+            "id": "TimeAccountModel",
+            "name": "Time Account Model",
+            "description": "Model for Time Account / Leave Balance management.",
+            "primary_entity": "TimeAccount",
+            "common_fields": [
+                {"name": "externalCode", "entity": "TimeAccount", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "userId", "entity": "TimeAccount", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "timeAccountType", "entity": "TimeAccount", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "bookingBalance", "entity": "TimeAccount", "type": "Edm.Decimal", "picklist": false, "picklist_id": null},
+                {"name": "endDate", "entity": "TimeAccount", "type": "Edm.DateTime", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Time Account"]
+        },
+        {
+            "id": "PositionModel",
+            "name": "Position Model",
+            "description": "Model for Position Management.",
+            "primary_entity": "Position",
+            "common_fields": [
+                {"name": "code", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "externalName_en_US", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "department", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "division", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "company", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "jobCode", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "vacant", "entity": "Position", "type": "Edm.Boolean", "picklist": false, "picklist_id": null},
+                {"name": "effectiveStatus", "entity": "Position", "type": "Edm.String", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Position"]
+        },
+        {
+            "id": "PerGlobalInfoModel",
+            "name": "Person Global Information Model",
+            "description": "Model for country-specific personal information (PerGlobalInfoCOL, PerGlobalInfoMEX, PerGlobalInfoPER, etc.).",
+            "primary_entity": "PerGlobalInfoCOL",
+            "country_variants": {
+                "COL": "PerGlobalInfoCOL",
+                "MEX": "PerGlobalInfoMEX",
+                "PER": "PerGlobalInfoPER"
+            },
+            "common_fields": [
+                {"name": "personIdExternal", "entity": "PerGlobalInfo", "type": "Edm.String", "picklist": false, "picklist_id": null},
+                {"name": "startDate", "entity": "PerGlobalInfo", "type": "Edm.DateTime", "picklist": false, "picklist_id": null},
+                {"name": "country", "entity": "PerGlobalInfo", "type": "Edm.String", "picklist": false, "picklist_id": null}
+            ],
+            "hris_elements": ["Personal Information"]
+        }
+    ]
+}

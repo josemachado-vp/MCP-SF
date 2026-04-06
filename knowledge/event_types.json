@@ -1,0 +1,56 @@
+{
+    "event_types": [
+        {
+            "id": "onSave",
+            "name": "On Save",
+            "description": "Triggered when a record is saved. Most common event type.",
+            "execution_order": 3,
+            "notes": "Runs after onChange and onInit. Can modify field values before persistence. Best for derivations that should happen at save time.",
+            "compatible_actions": ["SET_FIELD", "RAISE_MESSAGE", "TRIGGER_WORKFLOW"],
+            "tips": [
+                "Use for field derivations that depend on multiple fields",
+                "Good for setting calculated values",
+                "Runs on both new records and updates"
+            ]
+        },
+        {
+            "id": "onChange",
+            "name": "On Change",
+            "description": "Triggered when a specific field value changes in the UI.",
+            "execution_order": 2,
+            "notes": "Runs in real-time as user edits. Good for cascading derivations and immediate field updates.",
+            "compatible_actions": ["SET_FIELD", "SET_FIELD_PROPERTY"],
+            "tips": [
+                "Use for real-time cascading (field A changes -> field B updates)",
+                "Can make fields required/hidden/read-only dynamically",
+                "Only triggers when the specific monitored field changes"
+            ]
+        },
+        {
+            "id": "onInit",
+            "name": "On Initialize",
+            "description": "Triggered when a new record is created (before user fills data).",
+            "execution_order": 1,
+            "notes": "Runs only on new records, not edits. Good for setting default values.",
+            "compatible_actions": ["SET_FIELD", "SET_FIELD_PROPERTY"],
+            "tips": [
+                "Use for default values on new records",
+                "Does NOT run when editing existing records",
+                "Runs before the user sees the form"
+            ]
+        },
+        {
+            "id": "validate",
+            "name": "Validate",
+            "description": "Triggered after save is submitted but before commit. Used for validation only.",
+            "execution_order": 4,
+            "notes": "Can raise error messages to block the save if validation fails. Cannot modify field values.",
+            "compatible_actions": ["RAISE_MESSAGE"],
+            "tips": [
+                "Use for cross-field validations",
+                "Can block save with error messages",
+                "Cannot modify field values, only validate"
+            ]
+        }
+    ]
+}

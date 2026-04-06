@@ -1,0 +1,233 @@
+{
+    "categories": {
+        "employee_data": {
+            "description": "Employee-related transactional data entities",
+            "entities": {
+                "User": {
+                    "description": "Core user profile (username, email, status, default locale)",
+                    "key_fields": ["userId"],
+                    "common_select": "userId,username,firstName,lastName,email,status,department,division,location,title",
+                    "nl_hints": ["user", "employee", "person", "people", "worker", "staff"]
+                },
+                "EmpJob": {
+                    "description": "Job Information - position, department, manager, effective-dated",
+                    "key_fields": ["userId", "startDate", "seqNumber"],
+                    "common_select": "userId,startDate,company,department,division,location,position,jobCode,managerId,emplStatus,eventReason,countryOfCompany",
+                    "nl_hints": ["job", "position", "department", "manager", "job info", "job information"],
+                    "effective_dated": true,
+                    "date_filter_template": "startDate le datetime'{date}T00:00:00' and (endDate ge datetime'{date}T00:00:00' or endDate eq datetime'9999-12-31T00:00:00')"
+                },
+                "EmpCompensation": {
+                    "description": "Compensation Information - pay, salary, comp rate",
+                    "key_fields": ["userId", "startDate", "seqNumber"],
+                    "common_select": "userId,startDate,payGroup,payType,payrollId,compaRatio,rangePenetration",
+                    "nl_hints": ["compensation", "salary", "pay", "comp", "wage"],
+                    "effective_dated": true,
+                    "date_filter_template": "startDate le datetime'{date}T00:00:00' and (endDate ge datetime'{date}T00:00:00' or endDate eq datetime'9999-12-31T00:00:00')"
+                },
+                "EmpEmployment": {
+                    "description": "Employment Details - hire date, termination, seniority",
+                    "key_fields": ["personIdExternal", "userId"],
+                    "common_select": "personIdExternal,userId,startDate,endDate,seniorityDate,originalStartDate",
+                    "nl_hints": ["employment", "hire", "termination", "seniority", "hire date"]
+                },
+                "PerPersonal": {
+                    "description": "Personal Information - name, gender, nationality, marital status",
+                    "key_fields": ["personIdExternal", "startDate"],
+                    "common_select": "personIdExternal,startDate,firstName,lastName,middleName,gender,nationality,maritalStatus",
+                    "nl_hints": ["personal", "name", "gender", "nationality", "personal info"],
+                    "effective_dated": true
+                },
+                "PerEmail": {
+                    "description": "Email addresses for a person",
+                    "key_fields": ["personIdExternal", "emailType"],
+                    "common_select": "personIdExternal,emailType,emailAddress,isPrimary",
+                    "nl_hints": ["email", "email address", "contact email"]
+                },
+                "PerPhone": {
+                    "description": "Phone numbers for a person",
+                    "key_fields": ["personIdExternal", "phoneType"],
+                    "common_select": "personIdExternal,phoneType,phoneNumber,isPrimary",
+                    "nl_hints": ["phone", "telephone", "phone number", "contact phone"]
+                },
+                "PerNationalId": {
+                    "description": "National ID / document numbers",
+                    "key_fields": ["personIdExternal", "country", "cardType"],
+                    "common_select": "personIdExternal,country,cardType,nationalId",
+                    "nl_hints": ["national id", "document", "id number", "ssn", "identification"]
+                },
+                "EmpJobRelationships": {
+                    "description": "Job relationships (HR manager, matrix manager, etc.)",
+                    "key_fields": ["userId", "startDate", "relationshipType"],
+                    "common_select": "userId,startDate,relationshipType,relUserId,relEmploymentNav",
+                    "nl_hints": ["relationship", "hr manager", "matrix manager", "dotted line"]
+                }
+            }
+        },
+        "foundation_objects": {
+            "description": "Foundation Objects - organizational reference data",
+            "entities": {
+                "FOCompany": {
+                    "description": "Company / Legal Entity",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,country,currency,status",
+                    "nl_hints": ["company", "legal entity", "companies"]
+                },
+                "FODivision": {
+                    "description": "Division",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,description,status",
+                    "nl_hints": ["division", "divisions"]
+                },
+                "FODepartment": {
+                    "description": "Department",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,description,headOfDepartment,parent,status",
+                    "nl_hints": ["department", "departments", "dept"]
+                },
+                "FOBusinessUnit": {
+                    "description": "Business Unit",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,description,status",
+                    "nl_hints": ["business unit", "bu"]
+                },
+                "FOCostCenter": {
+                    "description": "Cost Center",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,description,status",
+                    "nl_hints": ["cost center", "costcenter"]
+                },
+                "FOLocation": {
+                    "description": "Work Location / Office",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,description,addressLine1,city,country,status",
+                    "nl_hints": ["location", "office", "site", "work location"]
+                },
+                "FOJobCode": {
+                    "description": "Job Classification / Job Code",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,grade,jobFunction,jobFamily,status",
+                    "nl_hints": ["job code", "job classification", "job class"]
+                },
+                "FOPayGrade": {
+                    "description": "Pay Grade",
+                    "key_fields": ["externalCode", "startDate"],
+                    "common_select": "externalCode,startDate,name,status",
+                    "nl_hints": ["pay grade", "grade", "salary grade"]
+                },
+                "Position": {
+                    "description": "Position Management - positions with incumbents",
+                    "key_fields": ["code", "effectiveStartDate"],
+                    "common_select": "code,effectiveStartDate,externalName_en_US,department,division,company,jobCode,vacant,effectiveStatus",
+                    "nl_hints": ["position", "positions", "headcount position"]
+                }
+            }
+        },
+        "time_management": {
+            "description": "Time-related entities",
+            "entities": {
+                "TimeAccount": {
+                    "description": "Time account balances (leave balances)",
+                    "key_fields": ["externalCode"],
+                    "common_select": "externalCode,userId,timeAccountType,bookingBalance,endDate",
+                    "nl_hints": ["time account", "leave balance", "pto balance", "vacation balance"]
+                },
+                "EmployeeTime": {
+                    "description": "Time off / absence records",
+                    "key_fields": ["externalCode"],
+                    "common_select": "externalCode,userId,timeType,startDate,endDate,approvalStatus,quantityInDays",
+                    "nl_hints": ["time off", "absence", "leave", "vacation", "pto"]
+                }
+            }
+        },
+        "configuration": {
+            "description": "System configuration entities",
+            "entities": {
+                "RuleHeaderBean": {
+                    "description": "Business Rules configured in the instance",
+                    "key_fields": ["ruleId"],
+                    "common_select": "ruleId,ruleName,ruleScenario,baseObject,ruleStatus",
+                    "nl_hints": ["business rule", "rule", "rules"]
+                },
+                "RBPRole": {
+                    "description": "Role-Based Permission roles",
+                    "key_fields": ["roleId"],
+                    "common_select": "roleId,roleName,roleDesc",
+                    "nl_hints": ["permission role", "rbp role", "role", "security role"]
+                },
+                "FODynamicRole": {
+                    "description": "Dynamic roles / permission groups",
+                    "key_fields": ["dynamicRoleId"],
+                    "common_select": "dynamicRoleId,dynamicRoleName,dynamicRoleDescription",
+                    "nl_hints": ["dynamic role", "dynamic group", "permission group"]
+                }
+            }
+        }
+    },
+    "nl_patterns": {
+        "name_search": {
+            "pattern": "name-like query (first name, last name, or full name)",
+            "entity": "User",
+            "filter_template": "substringof('{value}', firstName) or substringof('{value}', lastName)"
+        },
+        "department_search": {
+            "pattern": "department code or name reference",
+            "entity": "EmpJob",
+            "filter_template": "department eq '{value}'"
+        },
+        "country_search": {
+            "pattern": "country code or name",
+            "entity": "EmpJob",
+            "filter_template": "countryOfCompany eq '{value}'"
+        },
+        "company_search": {
+            "pattern": "company code reference",
+            "entity": "EmpJob",
+            "filter_template": "company eq '{value}'"
+        },
+        "status_search": {
+            "pattern": "employment status (active, terminated, etc.)",
+            "entity": "EmpJob",
+            "filter_template": "emplStatus eq '{value}'"
+        },
+        "manager_search": {
+            "pattern": "manager user ID",
+            "entity": "EmpJob",
+            "filter_template": "managerId eq '{value}'"
+        },
+        "location_search": {
+            "pattern": "work location code",
+            "entity": "EmpJob",
+            "filter_template": "location eq '{value}'"
+        },
+        "userid_search": {
+            "pattern": "exact user ID lookup",
+            "entity": "User",
+            "filter_template": "userId eq '{value}'"
+        }
+    },
+    "status_codes": {
+        "active": {"emplStatus": "A", "description": "Active employee"},
+        "terminated": {"emplStatus": "T", "description": "Terminated employee"},
+        "inactive": {"emplStatus": "U", "description": "Inactive / Leave of absence"},
+        "retired": {"emplStatus": "R", "description": "Retired"}
+    },
+    "country_codes": {
+        "colombia": "COL",
+        "mexico": "MEX",
+        "peru": "PER",
+        "chile": "CHL",
+        "argentina": "ARG",
+        "brazil": "BRA",
+        "united states": "USA",
+        "spain": "ESP",
+        "germany": "DEU",
+        "france": "FRA",
+        "united kingdom": "GBR",
+        "canada": "CAN",
+        "india": "IND",
+        "china": "CHN",
+        "japan": "JPN",
+        "australia": "AUS"
+    }
+}

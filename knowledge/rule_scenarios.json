@@ -1,0 +1,84 @@
+{
+    "scenarios": [
+        {
+            "id": "EC_JOB_RULES",
+            "name": "Rules for Employee Central",
+            "description": "Rules that trigger on Employee Central transactions (Job Information, Compensation, Personal Information, etc.)",
+            "common_base_objects": ["JobInformationModel", "CompInfoModel", "PersonalInfoModel"],
+            "typical_use_cases": [
+                "Derive Pay Group from Country and Employee Class",
+                "Set default values on Job Information save",
+                "Validate required fields before save",
+                "Derive Cost Center from Department",
+                "Auto-populate Location based on Company",
+                "Set Employment Type based on Employee Class"
+            ]
+        },
+        {
+            "id": "EC_EVENT_REASON",
+            "name": "Event Reason Derivation",
+            "description": "Rules that automatically derive event reasons based on field changes",
+            "common_base_objects": ["JobInformationModel"],
+            "typical_use_cases": [
+                "Derive event reason from changed fields",
+                "Set event reason based on action type (hire, transfer, promotion)",
+                "Auto-set event reason for compensation changes"
+            ]
+        },
+        {
+            "id": "EC_COMPENSATION",
+            "name": "Rules for Compensation",
+            "description": "Rules that trigger on Compensation Information changes",
+            "common_base_objects": ["CompInfoModel"],
+            "typical_use_cases": [
+                "Derive pay component based on pay group",
+                "Validate salary ranges",
+                "Set default compensation values for new hires"
+            ]
+        },
+        {
+            "id": "EC_TIME_OFF",
+            "name": "Rules for Time Off",
+            "description": "Rules for Time Off and Leave management",
+            "common_base_objects": ["TimeAccountModel", "TimeOffModel"],
+            "typical_use_cases": [
+                "Validate time off balance before approval",
+                "Set accrual rules based on employee class",
+                "Derive time account type from leave type"
+            ]
+        },
+        {
+            "id": "EC_POSITION",
+            "name": "Rules for Position Management",
+            "description": "Rules for Position Management scenarios",
+            "common_base_objects": ["PositionModel"],
+            "typical_use_cases": [
+                "Derive position attributes from job classification",
+                "Validate position budget before creation",
+                "Auto-set reporting structure"
+            ]
+        },
+        {
+            "id": "EC_WORKFLOWS",
+            "name": "Workflow Rules",
+            "description": "Rules that trigger workflow processes",
+            "common_base_objects": ["JobInformationModel", "CompInfoModel"],
+            "typical_use_cases": [
+                "Route approval based on change type",
+                "Trigger notification for specific changes",
+                "Auto-approve minor changes"
+            ]
+        },
+        {
+            "id": "EC_CUSTOM",
+            "name": "Custom MDF Rules",
+            "description": "Rules for custom MDF objects",
+            "common_base_objects": [],
+            "typical_use_cases": [
+                "Validate custom object data on save",
+                "Derive values between custom objects",
+                "Set default values for custom fields"
+            ]
+        }
+    ]
+}
