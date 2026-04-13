@@ -1,7 +1,7 @@
 """
 SAP SuccessFactors Assistant MCP Server.
 
-Provides 50 tools organized in twelve categories for SF consultants
+Provides 53 tools organized in thirteen categories for SF consultants
 and implementors:
 
 - Discovery (4): Entity metadata, picklists, OData queries
@@ -18,6 +18,7 @@ and implementors:
 - MDF (3): Object definitions, import templates, object inventory
 - Go-Live (2): Pre-go-live checks, reconciliation reports
 - Country (3): Country fields, compliance validation, config guides
+- Workbook Generator (3): Foundation Objects, Workflow Notifications, Employee Central Rules
 
 Usage:
     uv run python main.py
@@ -141,14 +142,21 @@ from tools.country import (
     generate_country_config_guide,
 )
 
+# --- Workbook Generator ---
+from tools.workbook_generator import (
+    generate_fo_workbook,
+    generate_workflow_workbook,
+    generate_rules_workbook,
+)
+
 
 mcp = FastMCP(
     name="SF Assistant MCP",
     instructions=(
-        "This server provides 50 tools for SAP SuccessFactors consultants and implementors. "
+        "This server provides 53 tools for SAP SuccessFactors consultants and implementors. "
         "It covers employee data queries, organizational structure, business rules, "
         "data import, analytics, instance comparison, auditing, documentation generation, "
-        "migration tooling, MDF objects, go-live validation, and multi-country support.\n\n"
+        "migration tooling, MDF objects, go-live validation, multi-country support, and workbook generation.\n\n"
         "Tool categories:\n\n"
         "**Discovery** (explore SF metadata):\n"
         "1. get_entity_metadata - Explore fields on an entity\n"
@@ -213,6 +221,10 @@ mcp = FastMCP(
         "47. get_country_specific_fields - Country fields & requirements\n"
         "48. validate_country_compliance - Compliance validation\n"
         "49. generate_country_config_guide - Configuration guide\n\n"
+        "**Workbook Generator** (populate client Excel workbooks from live SF data):\n"
+        "50. generate_fo_workbook - Populate Object & Picklist Data workbook (28 sheets)\n"
+        "51. generate_workflow_workbook - Populate Workflow Notifications workbook (8 sheets)\n"
+        "52. generate_rules_workbook - Populate Employee Central Rules sheet\n\n"
         "Typical workflows:\n"
         "- Employee queries: search_employees → get_employee_profile\n"
         "- Rules: get_entity_metadata → validate_rule_fields → generate_rule_spec\n"
@@ -300,6 +312,11 @@ mcp.add_tool(generate_reconciliation_report)
 mcp.add_tool(get_country_specific_fields)
 mcp.add_tool(validate_country_compliance)
 mcp.add_tool(generate_country_config_guide)
+
+# Workbook Generator
+mcp.add_tool(generate_fo_workbook)
+mcp.add_tool(generate_workflow_workbook)
+mcp.add_tool(generate_rules_workbook)
 
 
 if __name__ == "__main__":
