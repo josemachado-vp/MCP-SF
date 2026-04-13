@@ -130,10 +130,14 @@ async def _fetch_all_records(
     return records
 
 
-def _clear_template_data_rows(ws) -> None:
-    """Delete all rows from row 3 onward (template instruction/example rows)."""
-    if ws.max_row >= 3:
-        ws.delete_rows(3, ws.max_row - 2)
+def _clear_template_data_rows(ws, from_row: int = 3) -> None:
+    """Delete all rows from from_row onward.
+
+    FO template: from_row=3 (rows 1-2 are headers, row 3 is instructions)
+    WF template: from_row=2 (row 1 is the only header row)
+    """
+    if ws.max_row >= from_row:
+        ws.delete_rows(from_row, ws.max_row - from_row + 1)
 
 
 def _write_records_to_sheet(
@@ -345,9 +349,23 @@ async def generate_workflow_workbook(
             continue
 
         ent_cfg = wf_ent.get(sheet_name, {})
-        odata_fields = wf_col[sheet_name]["odata_fields"]
-        count = _write_records_to_sheet(ws, odata_fields, records, ent_cfg.get("field_aliases", {}))
-        summary[sheet_name] = count
+        columns_map: dict[str, str] = ent_cfg.get("columns_map", {})
+
+        # WF template: row 1 = human labels (no OData paths, no instruction row)
+        # Read actual column headers from the template row 1
+        col_headers = [cell.value for cell in ws[1]]
+        _clear_template_data_rows(ws, from_row=2)
+
+        rows_written = 0
+        for record in records:
+            row = []
+            for header in col_headers:
+                sf_field = columns_map.get(header, "") if header else ""
+                row.append(_resolve_nested_field(record, sf_field) if sf_field else "")
+            ws.append(row)
+            rows_written += 1
+
+        summary[sheet_name] = rows_written
         sheets_populated += 1
 
     EXPORTS_DIR.mkdir(exist_ok=True)

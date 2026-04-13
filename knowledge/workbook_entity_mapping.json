@@ -334,15 +334,94 @@
   },
 
   "WF": {
-    "Workflows Tab":                  { "entity": "WorkflowConfiguration", "expand": "steps", "manual": false, "field_aliases": {} },
-    "WF Processes":                   { "entity": "WorkflowConfiguration", "manual": false, "field_aliases": {} },
-    "Dynamic Roles":                  { "entity": "DynamicGroup",          "manual": false, "field_aliases": {} },
-    "Workflow Groups":                { "entity": "WorkflowGroup",         "manual": false, "field_aliases": {} },
-    "Alert Messages":                 { "entity": "AlertMessage",          "manual": false, "field_aliases": {} },
-    "Message Definitions":            { "entity": "RuleHeaderBean",        "manual": false, "field_aliases": {},
-                                        "filter": "contains(ruleDescription,'RAISE_MESSAGE')" },
-    "Email Notification Templates":   { "entity": "EmailNotification",     "manual": false, "field_aliases": {} },
-    "Workflow Configuration Settings":{ "entity": null,                    "manual": true,  "field_aliases": {} }
+    "Workflows Tab": {
+      "entity": "FOWfConfigStepApprover",
+      "manual": false,
+      "columns_map": {
+        "Portlet / Object":              "",
+        "Functional Scenario":           "",
+        "Initiator":                     "",
+        "Workflow Step":                 "stepNum",
+        "Approver/CC Type":              "approverType",
+        "Approver/CC Role":              "approverRole",
+        "Relationship to Approver":      "relationshipToApprover",
+        "Context":                       "context",
+        "Edit Transaction Capability":   "actionType",
+        "Remind in Days":                "",
+        "Is Delegate Supported":         "",
+        "Alert Message":                 "emailConfiguration",
+        "Business Rule Trigger":         "",
+        "Workflow ID":                   "externalCode"
+      }
+    },
+    "WF Processes": {
+      "entity": "FOWfConfig",
+      "manual": false,
+      "columns_map": {
+        "Process":        "name",
+        "Portlet":        "",
+        "Notes":          "description",
+        "Initiator":      "",
+        "Approver 1":     "",
+        "Approver 2":     "",
+        "Approver 3":     "",
+        "Notifications":  "",
+        "Notes2":         ""
+      }
+    },
+    "Dynamic Roles": {
+      "entity": "FODynamicRole",
+      "manual": false,
+      "columns_map": {
+        "Dynamic Role ID":      "externalCode",
+        "Dynamic Role":         "name",
+        "Description":          "description",
+        "Base Object":          "baseObjectType",
+        "Job Classification":   "jobCode",
+        "Department":           "department",
+        "Division":             "division",
+        "Location":             "location",
+        "Legal Entity":         "company",
+        "Business Unit":        "businessUnit",
+        "Cost Center":          "costCenter",
+        "Pay Grade":            "payGrade",
+        "Pay Group":            "payGroup",
+        "Event Reason":         "eventReason",
+        "Legal Entity Country": "",
+        "Location Group":       "",
+        "Job Family":           "",
+        "Pay Range":            "payRange",
+        "Job Function":         "",
+        "Region":               "",
+        "Add Custom Fields":    "",
+        "Approver Type":        "",
+        "Approver":             "person",
+        "Resolver":             "",
+        "Resolver Type":        "resolverType"
+      }
+    },
+    "Workflow Groups": {
+      "entity": null, "manual": true, "columns_map": {}
+    },
+    "Alert Messages": {
+      "entity": "AlertMessage",
+      "manual": false,
+      "columns_map": {
+        "Code":              "externalCode",
+        "Name":              "externalName",
+        "Alert Header":      "alertHeader",
+        "Alert Description": "alertDescription"
+      }
+    },
+    "Message Definitions": {
+      "entity": null, "manual": true, "columns_map": {}
+    },
+    "Workflow Configuration Settings": {
+      "entity": null, "manual": true, "columns_map": {}
+    },
+    "Email Notification Templates": {
+      "entity": null, "manual": true, "columns_map": {}
+    }
   },
 
   "RBP": {
