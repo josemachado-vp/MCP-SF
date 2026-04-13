@@ -5,66 +5,334 @@
       "expand": "values",
       "flatten_array_field": "values",
       "manual": false,
-      "field_aliases": {}
+      "field_aliases": {
+        "values.label.en_US":        "values.label_en_US",
+        "values.label.defaultValue": "values.label_defaultValue",
+        "values.label.es_ES":        "values.label_es_ES",
+        "values.label.en_DEBUG":     "values.label_en_DEBUG",
+        "values.label.es_MX":        "values.label_es_MX",
+        "values.label.zh_CN":        "values.label_zh_CN",
+        "values.label.bs_BS":        "values.label_bs_BS"
+      }
     },
-    "Legal Entity":                  { "entity": "FOCompany",             "manual": false, "field_aliases": {} },
-    "Legal entity-Business Unit":    { "entity": "FOBusinessUnit",        "manual": false, "field_aliases": {} },
-    "Business Unit":                 { "entity": "FOBusinessUnit",        "manual": false, "field_aliases": {} },
-    "Business Unit-Division":        { "entity": "FODivision",            "manual": false, "field_aliases": {} },
-    "Division":                      { "entity": "FODivision",            "manual": false, "field_aliases": {} },
-    "Division-Department":           { "entity": "FODepartment",          "manual": false, "field_aliases": {} },
-    "Department":                    { "entity": "FODepartment",          "manual": false, "field_aliases": {} },
-    "Department-Cost Center":        { "entity": "FOCostCenter",          "manual": false, "field_aliases": {} },
-    "Cost Center":                   { "entity": "FOCostCenter",          "manual": false, "field_aliases": {} },
-    "Job Family":                    { "entity": "JobClassificationGroup","manual": false, "field_aliases": {} },
-    "Job Family-Job Function":       { "entity": "JobFunction",           "manual": false, "field_aliases": {} },
-    "Job Function":                  { "entity": "JobFunction",           "manual": false, "field_aliases": {} },
-    "Job Function-Job Code":         { "entity": "JobClassification",     "manual": false, "field_aliases": {} },
-    "Job Code":                      { "entity": "JobClassification",     "manual": false, "field_aliases": {} },
-    "Region":                        { "entity": "Region",                "manual": false, "field_aliases": {} },
+
+    "Legal Entity": {
+      "entity": "FOCompany",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":                      "name_en_US",
+        "name.defaultValue":               "name_defaultValue",
+        "effectiveStartDate":              "startDate",
+        "effectiveStatus":                 "status",
+        "currency.code":                   "currency",
+        "countryOfRegistration.code":      "country",
+        "defaultLocation.externalCode":    "defaultLocation",
+        "standardWeeklyHours":             "standardHours",
+        "cust_glbOfficialLanguage.externalCode": "cust_glbOfficialLanguage",
+        "cust_glbSystemLocale.externalCode":     "cust_glbSystemLocale",
+        "toNameFormat.externalCode":            "",
+        "toDisplayNameFormat.externalCode":     "",
+        "cust_toNameFormatGO.externalCode":     ""
+      }
+    },
+
+    "Legal entity-Business Unit": {
+      "entity": "FOBusinessUnit",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":              "startDate",
+        "cust_toLegalEntity.externalCode": ""
+      }
+    },
+
+    "Business Unit": {
+      "entity": "FOBusinessUnit",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":       "name_en_US",
+        "name.defaultValue":"name_defaultValue",
+        "effectiveStartDate":"startDate",
+        "effectiveStatus":  "status"
+      }
+    },
+
+    "Business Unit-Division": {
+      "entity": "FODivision",
+      "expand": "cust_toBusinessUnit",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":                "startDate",
+        "cust_toBusinessUnit.externalCode":  "cust_toBusinessUnit.externalCode"
+      }
+    },
+
+    "Division": {
+      "entity": "FODivision",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":        "name_en_US",
+        "name.defaultValue": "name_defaultValue",
+        "effectiveStartDate":"startDate",
+        "effectiveStatus":   "status"
+      }
+    },
+
+    "Division-Department": {
+      "entity": "FODepartment",
+      "expand": "cust_toDivision",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":            "startDate",
+        "cust_toDivision.externalCode":  "cust_toDivision.externalCode"
+      }
+    },
+
+    "Department": {
+      "entity": "FODepartment",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":        "name_en_US",
+        "name.defaultValue": "name_defaultValue",
+        "name.en_DEBUG":     "name_en_DEBUG",
+        "effectiveStartDate":"startDate",
+        "effectiveStatus":   "status"
+      }
+    },
+
+    "Department-Cost Center": {
+      "entity": "FOCostCenter",
+      "expand": "cust_toDepartment",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":               "startDate",
+        "cust_toDepartment.externalCode":   "cust_toDepartment.externalCode"
+      }
+    },
+
+    "Cost Center": {
+      "entity": "FOCostCenter",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":                      "name_en_US",
+        "name.defaultValue":               "name_defaultValue",
+        "effectiveStartDate":              "startDate",
+        "effectiveStatus":                 "status",
+        "cust_toLegalEntity.externalCode": "cust_toLegalEntityProp",
+        "costCenterExternalObjectId":      "costcenterExternalObjectID"
+      }
+    },
+
+    "Job Family": {
+      "entity": "JobClassificationGroup",
+      "manual": false,
+      "field_aliases": {
+        "name.defaultValue": "name_defaultValue",
+        "name.en_US":        "name_en_US",
+        "name.en_DEBUG":     "name_en_DEBUG",
+        "effectiveStartDate":"startDate",
+        "effectiveStatus":   "status"
+      }
+    },
+
+    "Job Family-Job Function": {
+      "entity": "JobFunction",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":            "startDate",
+        "cust_JobFamily.externalCode":   "cust_JobFamily"
+      }
+    },
+
+    "Job Function": {
+      "entity": "JobFunction",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":        "name_en_US",
+        "name.defaultValue": "name_defaultValue",
+        "name.en_DEBUG":     "name_en_DEBUG",
+        "effectiveStartDate":"startDate",
+        "effectiveStatus":   "status"
+      }
+    },
+
+    "Job Function-Job Code": {
+      "entity": "JobClassification",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":              "startDate",
+        "cust_toJobFunction.externalCode": "cust_toJobFunction"
+      }
+    },
+
+    "Job Code": {
+      "entity": "JobClassification",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate":   "startDate",
+        "effectiveStatus":      "status",
+        "cust_directIndirect.externalCode": "cust_directIndirect",
+        "payGrade.externalCode":            "payGrade"
+      }
+    },
+
+    "Region": {
+      "entity": "FOGeozone",
+      "manual": false,
+      "field_aliases": {
+        "effectiveStartDate": "startDate",
+        "effectiveStatus":    "status"
+      }
+    },
+
     "Location Group": {
-      "entity": "FOLocationGroup", "manual": false,
-      "field_aliases": { "start-date": "effectiveStartDate", "end-date": "effectiveEndDate" }
+      "entity": "FOLocationGroup",
+      "manual": false,
+      "field_aliases": {
+        "name.en_DEBUG":      "name_en_DEBUG",
+        "effectiveStartDate": "effectiveStartDate",
+        "effectiveStatus":    "effectiveStatus"
+      }
     },
+
     "Location": {
-      "entity": "FOLocation", "manual": false,
+      "entity": "FOLocation",
+      "expand": "addressNavDEFLT",
+      "manual": false,
       "field_aliases": {
-        "start-date": "startDate", "end-date": "endDate",
-        "address.zip-code": "address.zipCode"
+        "name.en_US":              "name",
+        "name.defaultValue":       "name",
+        "effectiveStartDate":      "startDate",
+        "effectiveStatus":         "status",
+        "cust_glb_Region.externalCode": "locationGroup",
+        "LegalEntity.externalCode":     "",
+        "address.country":         "addressNavDEFLT.country",
+        "address.address1":        "addressNavDEFLT.address1",
+        "address.address2":        "addressNavDEFLT.address2",
+        "address.city":            "addressNavDEFLT.city",
+        "address.county":          "addressNavDEFLT.county",
+        "address.state":           "addressNavDEFLT.state",
+        "address.zip-code":        "addressNavDEFLT.zipCode"
       }
     },
+
     "Pay Grade": {
-      "entity": "PayGrade", "manual": false,
-      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
-    },
-    "Pay Range": {
-      "entity": "PayRange", "manual": false,
-      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
-    },
-    "Pay Group":           { "entity": "FOPayGroup",          "manual": false, "field_aliases": {} },
-    "Pay Component": {
-      "entity": "PayComponent", "manual": false,
-      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
-    },
-    "Pay Component Group": {
-      "entity": "PayComponentGroup", "manual": false,
-      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
-    },
-    "Event Reason": {
-      "entity": "FOEventReason", "manual": false,
+      "entity": "PayGrade",
+      "manual": false,
       "field_aliases": {
-        "start-date": "startDate", "end-date": "endDate",
-        "custom-string1": "customString1",
-        "implicit-position-action": "implicitPositionAction",
-        "include-in-work-experience": "includeInWorkExperience",
-        "payroll-event": "payrollEvent"
+        "start-date": "startDate",
+        "end-date":   "endDate"
       }
     },
-    "Time Type":       { "entity": "TimeType",       "manual": false, "field_aliases": {} },
-    "Payment Method":  { "entity": "PaymentMethod",  "manual": false, "field_aliases": {} },
-    "Pay Type":        { "entity": "PayType",         "manual": false, "field_aliases": {} },
-    "Vendor":          { "entity": "Vendor",          "manual": false, "field_aliases": {} }
+
+    "Pay Range": {
+      "entity": "PayRange",
+      "manual": false,
+      "field_aliases": {
+        "start-date":              "startDate",
+        "end-date":                "endDate",
+        "payGrade.externalCode":   "payGrade",
+        "LegalEntity.externalCode":"LegalEntity",
+        "geozone.externalCode":    "geozone"
+      }
+    },
+
+    "Pay Group": {
+      "entity": "FOPayGroup",
+      "manual": false,
+      "field_aliases": {
+        "name.en_US":                    "name_en_US",
+        "name.defaultValue":             "name_defaultValue",
+        "effectiveStartDate":            "startDate",
+        "effectiveStatus":               "status",
+        "paymentFrequency.externalCode": "paymentFrequency",
+        "paymentFrequencyFO.externalCode":"paymentFrequencyFO",
+        "cust_retroActive.externalCode": "cust_retroActive"
+      }
+    },
+
+    "Pay Component": {
+      "entity": "PayComponent",
+      "manual": false,
+      "field_aliases": {
+        "start-date": "startDate",
+        "end-date":   "endDate"
+      }
+    },
+
+    "Pay Component Group": {
+      "entity": "PayComponentGroup",
+      "manual": false,
+      "field_aliases": {
+        "start-date":               "startDate",
+        "end-date":                 "endDate",
+        "name.en_DEBUG":            "name_en_DEBUG",
+        "payComponent.externalCode":"payComponent"
+      }
+    },
+
+    "Event Reason": {
+      "entity": "FOEventReason",
+      "manual": false,
+      "field_aliases": {
+        "start-date":                    "startDate",
+        "end-date":                      "endDate",
+        "custom-string1":                "customString1",
+        "implicit-position-action":      "implicitPositionAction",
+        "include-in-work-experience":    "includeInWorkExperience",
+        "payroll-event":                 "payrollEvent"
+      }
+    },
+
+    "Time Type": {
+      "entity": "TimeType",
+      "manual": false,
+      "field_aliases": {
+        "externalName.en_US":                "externalName_en_US",
+        "externalName.defaultValue":         "externalName_defaultValue",
+        "externalName.en_DEBUG":             "externalName_en_DEBUG",
+        "loaStartEventReason.externalCode":  "loaStartEventReason",
+        "loaEndEventReason.externalCode":    "loaEndEventReason",
+        "adminWorkflow.externalCode":        "adminWorkflow",
+        "country.code":                      "country",
+        "workflowConfiguration.externalCode":"workflowConfiguration",
+        "countingMethod.externalCode":       "countingMethod",
+        "collisionGrouping.externalCode":    "collisionGrouping",
+        "absenceRetentionGroup.externalCode":"absenceRetentionGroup",
+        "absenceCountingConfiguration.externalCode":"absenceCountingConfiguration"
+      }
+    },
+
+    "Payment Method": {
+      "entity": "PaymentMethod",
+      "manual": false,
+      "field_aliases": {
+        "externalName.defaultValue":                   "externalName_defaultValue",
+        "externalName.en_US":                          "externalName_en_US",
+        "externalName.en_DEBUG":                       "externalName_en_DEBUG",
+        "toPaymentMethodAssignmentV3.country.code":    "",
+        "toPaymentMethodAssignmentV3.externalCode":    ""
+      }
+    },
+
+    "Pay Type": {
+      "entity": "PayType",
+      "manual": false,
+      "field_aliases": {
+        "externalName.defaultValue":               "externalName_defaultValue",
+        "externalName.en_US":                      "externalName_en_US",
+        "externalName.en_DEBUG":                   "externalName_en_DEBUG",
+        "toCustomPayTypeAssignment.country.code":  "",
+        "toCustomPayTypeAssignment.externalCode":  ""
+      }
+    },
+
+    "Vendor": {
+      "entity": "Vendor",
+      "manual": false,
+      "field_aliases": {}
+    }
   },
+
   "WF": {
     "Workflows Tab":                  { "entity": "WorkflowConfiguration", "expand": "steps", "manual": false, "field_aliases": {} },
     "WF Processes":                   { "entity": "WorkflowConfiguration", "manual": false, "field_aliases": {} },
@@ -76,6 +344,7 @@
     "Email Notification Templates":   { "entity": "EmailNotification",     "manual": false, "field_aliases": {} },
     "Workflow Configuration Settings":{ "entity": null,                    "manual": true,  "field_aliases": {} }
   },
+
   "RBP": {
     "Permission Group Assignment":  { "entity": null, "manual": true, "field_aliases": {} },
     "Field-Level Access & Actions": { "entity": null, "manual": true, "field_aliases": {} },

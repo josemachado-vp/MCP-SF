@@ -41,16 +41,31 @@ def _load_json(filename: str) -> dict:
 
 
 def _resolve_nested_field(record: dict, field_path: str) -> str:
-    """Resolve 'a.b.c' dotted path from a nested dict. Returns '' on any miss."""
+    """Resolve 'a.b.c' dotted path from a nested dict. Returns '' on any miss.
+
+    Handles OData expanded nav properties that return {"results": [single_object]}.
+    In that case, descends into results[0] automatically.
+    """
     if not field_path or not record:
         return ""
     current = record
     for part in field_path.split("."):
         if not isinstance(current, dict):
             return ""
+        # Handle OData results array from expanded nav properties (to-many)
+        if "results" in current and isinstance(current["results"], list):
+            if not current["results"]:
+                return ""
+            current = current["results"][0]
+            if not isinstance(current, dict):
+                return ""
         current = current.get(part)
         if current is None:
             return ""
+    # Final value might also be a results array (e.g. the field itself is nav)
+    if isinstance(current, dict) and "results" in current:
+        results = current["results"]
+        return str(results[0]) if results else ""
     return str(current) if current != "" else ""
 
 
