@@ -1,0 +1,1114 @@
+{
+  "FO": {
+    "template_path": "Workbooks Templates/1_26 Version_JVL - Object & Picklist Data.xlsx",
+    "sheets": {
+      "Picklist": {
+        "odata_fields": [
+          "[OPERATOR]",
+          "id",
+          "",
+          "effectiveStartDate",
+          "values.externalCode",
+          "values.nonUniqueExternalCode",
+          "values.parentPickListValue.externalCode",
+          "values.label.en_US",
+          "values.label.defaultValue",
+          "values.label.es_ES",
+          "values.label.en_DEBUG",
+          "values.label.es_MX",
+          "values.label.zh_CN",
+          "values.label.bs_BS",
+          "values.status",
+          "values.optionId",
+          "values.minVal",
+          "values.maxVal",
+          "values.lValue",
+          "values.rValue",
+          "values.optValue"
+        ],
+        "labels": [
+          "Supported operators: Delimit, Clear and Delete",
+          "Picklist.Code",
+          "Object / Portlet",
+          "Picklist.Effective Start Date",
+          "External Code",
+          "Non-unique External Code",
+          "Picklist Value.External Code",
+          "US English",
+          "Default Value",
+          "Spanish (Spain)",
+          "English (DEBUG)",
+          "Spanish (Mexico)",
+          "Chinese (China)",
+          "Malay (Malaysia)",
+          "Status(Valid Values : A/I   A for Active  I for Inactive  )",
+          "Option ID",
+          "Min value",
+          "Max value",
+          "Sort Order (L Value)",
+          "R Value",
+          "Value"
+        ],
+        "col_count": 21
+      },
+      "Legal Entity": {
+        "odata_fields": [
+          "externalCode",
+          "",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "defaultLocation.externalCode",
+          "standardWeeklyHours",
+          "currency.code",
+          "countryOfRegistration.code",
+          "cust_glbOfficialLanguage.externalCode",
+          "cust_glbSystemLocale.externalCode",
+          "cust_glbPayrollCode",
+          "cust_glbLegacyCode",
+          "cust_taxId",
+          "toNameFormat.externalCode",
+          "toDisplayNameFormat.externalCode",
+          "cust_toNameFormatGO.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Legal Entity Code",
+          "",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Location.Code",
+          "Standard Weekly Hours",
+          "Currency.Currency Code",
+          "Country/Region.Country/Region Code (3 char)",
+          "Picklist Value.External Code",
+          "Picklist Value.External Code",
+          "Payroll Code",
+          "Legacy Code",
+          "Tax ID",
+          "Legal Entity.Name Format for Legal Entity",
+          "Legal Entity.Name Format for General Display",
+          "Legal Entity.Name Format",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 19
+      },
+      "Legal entity-Business Unit": {
+        "odata_fields": [
+          "[OPERATOR]",
+          "externalCode",
+          "effectiveStartDate",
+          "cust_toLegalEntity.externalCode"
+        ],
+        "labels": [
+          "Supported operators: Delimit, Clear and Delete",
+          "Business Unit Code",
+          "Effective Date",
+          "Business Unit.Legal Entity"
+        ],
+        "col_count": 4
+      },
+      "Business Unit": {
+        "odata_fields": [
+          "externalCode",
+          "name.defaultValue",
+          "name.en_US",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "headOfUnit",
+          "cust_glbLegacyCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Business Unit Code",
+          "Default Value",
+          "US English",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Head of Unit",
+          "Legacy Code",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 8
+      },
+      "Business Unit-Division": {
+        "odata_fields": [
+          "externalCode",
+          "",
+          "effectiveStartDate",
+          "cust_toBusinessUnit.externalCode",
+          "",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Division Code",
+          "",
+          "Effective Date",
+          "Division.BusinessUnit",
+          "",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 6
+      },
+      "Division": {
+        "odata_fields": [
+          "externalCode",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "cust_glbLegacyCode",
+          "cust_glbHRBP",
+          "cust_glbFinance",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Division Code",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Legacy Code",
+          "HR Business Partner",
+          "Finance Controller",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 9
+      },
+      "Division-Department": {
+        "odata_fields": [
+          "externalCode",
+          "effectiveStartDate",
+          "cust_toDivision.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Department Code",
+          "Effective Date",
+          "Department.Division",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 4
+      },
+      "Department": {
+        "odata_fields": [
+          "externalCode",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "cust_glbLegacyCode",
+          "name.en_DEBUG",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Department Code",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Legacy Code",
+          "English (DEBUG)",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 8
+      },
+      "Department-Cost Center": {
+        "odata_fields": [
+          "externalCode",
+          "effectiveStartDate",
+          "cust_toDepartment.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Cost Center Code",
+          "Effective Date",
+          "Cost Center.Department",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 4
+      },
+      "Cost Center": {
+        "odata_fields": [
+          "externalCode",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "costCenterExternalObjectId",
+          "cust_toLegalEntity.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Cost Center Code",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Payroll Cost Center",
+          "Cost Center.Legal Entity",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 8
+      },
+      "Job Family": {
+        "odata_fields": [
+          "externalCode",
+          "name.defaultValue",
+          "name.en_US",
+          "status",
+          "name.en_DEBUG",
+          "createdLocale",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "GUID",
+          "Default Value",
+          "US English",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "English (DEBUG)",
+          "createdLocale",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 7
+      },
+      "Job Family-Job Function": {
+        "odata_fields": [
+          "externalCode",
+          "effectiveStartDate",
+          "cust_JobFamily.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Job Function ID",
+          "Effective Date",
+          "Job Function.Job Family",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 4
+      },
+      "Job Function": {
+        "odata_fields": [
+          "externalCode",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "name.en_DEBUG",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Job Function ID",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "English (DEBUG)",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 7
+      },
+      "Job Function-Job Code": {
+        "odata_fields": [
+          "externalCode",
+          "effectiveStartDate",
+          "cust_toJobFunction.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Job Code",
+          "Effective Date",
+          "Job Code.Job Function",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 4
+      },
+      "Job Code": {
+        "odata_fields": [
+          "externalCode",
+          "externalCode",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "cust_directIndirect.externalCode",
+          "payGrade.externalCode",
+          "cust_glbLegacyCode",
+          "toJobClassificationCountry.country.code",
+          "toJobClassificationCountry.toJobClassificationUSA.eeo1JobCategory.externalCode",
+          "toJobClassificationCountry.toJobClassificationUSA.flsaStatusUSA.externalCode",
+          "toJobClassificationCountry.toJobClassificationUSA.cust_WorkersCompCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Job Code",
+          "Job Code",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Picklist Value.External Code",
+          "payGrade.externalCode",
+          "Legacy Code",
+          "Country/Region.Country/Region Code (3 char)",
+          "Picklist Value.External Code",
+          "Picklist Value.External Code",
+          "Workers Comp Code",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 12
+      },
+      "Region": {
+        "odata_fields": [
+          "externalCode",
+          "externalName",
+          "effectiveStartDate",
+          "mdfSystemStatus",
+          "[OPERATOR]",
+          "cust_glbDescription"
+        ],
+        "labels": [
+          "Region Code",
+          "Region Name",
+          "Effective as of",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Supported operators: Delimit, Clear and Delete",
+          "Description"
+        ],
+        "col_count": 6
+      },
+      "Location Group": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "status",
+          "name.en_DEBUG",
+          "end-date"
+        ],
+        "labels": [
+          "Location Group Code",
+          "Location Group Name",
+          "Location Group Start Date",
+          "Location Group Status",
+          "English (DEBUG)",
+          "End Date"
+        ],
+        "col_count": 6
+      },
+      "Location": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "externalCode",
+          "start-date",
+          "status",
+          "timezone",
+          "standardHours",
+          "locationGroup",
+          "cust_glb_Region.externalCode",
+          "LegalEntity.externalCode",
+          "address.country",
+          "address.address1",
+          "address.address2",
+          "address.city",
+          "address.county",
+          "address.state",
+          "address.zip-code",
+          "end-date"
+        ],
+        "labels": [
+          "Location Code",
+          "Location Name",
+          "Location Code",
+          "Location Start Date",
+          "Location Status",
+          "Timezone",
+          "Standard Weekly Hours",
+          "Location Group",
+          "GeoZone",
+          "Legal Entity",
+          "Country",
+          "Address Line 1 | USA: Address Line 1 | DEU: Address Line 1 | AGO: Name of Addressee | ARE: Care Of | ARG: Street | AUS: Address Line 1 | AUT: Address Line 1 | AZE: Name of Addressee | BEL: Address Line 1 | BGD: Address Line 1 | BGR: Address Line 1 | BHR: Address Line 1 | BIH: Name of Addressee | BLR: Name of Addressee | BMU: Name of Addressee | BOL: Name of Addressee | BRA: Address Line 1 | BWA: Address Line 1 | CAN: Address Line 1 | CHE: Address Line 1 | CHL: Address Line 1 | CHN: Address Line 1 | CMR: Name of Addressee | COD: Name of Addressee | COG: Address 1 | COL: Address Line 1 | CRI: Name of Company | CYP: Name of Addressee | CZE: Address Line 1 | DOM: Name of Company | DNK: Address Line 1 | ECU: Name of Company | EGY: Name of Company | ESP: Address Line 1 | EST: Address Line 1 | ETH: Name of Addressee | FIN: Address Line 1 | FRA: Address Line 1 | GAB: Address 1 | GBR: Address Line 1 | GEO: Name of Addressee | GGY: Name of Addressee | GHA: Name of Addressee | GRC: Address Line 1 | GTM: Name of Company | HKG: Address Line 1 | HND: Name of Company | HRV: Care Of | HUN: Street Name | IDN: Care Of | IMN: Name of Addressee | IND: Address Line 1 | IRL: Address Line 1 | IRN: Name of Addressee | IRQ: House Number | ISL: Street Name and Number | ISR: Name of Addressee | ITA: Address Line 1 | JEY: Name of Addressee | JOR: Name of Addressee | JPN: Address Line 1 | KAZ: Care Of | KEN: Name of Addressee | KGZ: Name of Addressee | KHM: House Number | KOR: Address Line 1 | KWT: Address Line 1 | LBN: Name of Addressee | LKA: Building Name and Flat Number | LSO: Name of Addressee | LTU: Address Line 1 | LUX: Address Line 1 | LVA: Street Name | MAR: Address Line 1 | MEX: Address Line 1 | MLT: House Number | MMR: House Number and Street Name | MOZ: Name of Addressee | MUS: Name of Addressee | MWI: Name of Addressee | MYS: Address Line 1 | NAM: Address Line 1 | NIC: Address Line 1 | NCL: Name of Addressee | NGA: Address Line 1 | NLD: Address Line 1 | NOR: Address Line 1 | NZL: Address Line 1 | OMN: PO Box | PAN: Name of Company | PAK: Name of Company | PER: Name of Company | PHL: Care Of | POL: Address Line 1 | PRI: Address Line 1 | PRT: Address Line 1 | PRY: Name of Addressee | QAT: Addressee | ROU: Address Line 1 | RUS: Street | SAU: Addressee | SGP: Street and House Number | SLV: Address Line 1 | SRB: Name of Company | SSD: Building | SVK: Street | SVN: Address Line 1 | SWE: Address Line 1 | SWZ: Name of Addressee | TCD: Name of Addressee | THA: First Address Line | TUR: Address Line 1 | TWN: Address Line 1 | TZA: Address Line 1 | UGA: Address Line 1 | UKR: Addressee | URY: Name of Addressee | VEN: Street Name and Number | VIR: Name of Addressee | VNM: Name of Addressee | XKX: Street Name and Number | ZAF: Unit Number | ZMB: Name of Addressee | ZWE: Name of Addressee",
+          "Address Line 2 | USA: Address Line 2 | DEU: Address Line 2 | AGO: Street Name and Number | ARE: Street | ARG: House Number | AUS: Address Line 2 | AUT: Address Line 2 | AZE: Street Name and Number | BEL: Address Line 2 | BGD: Street Number and Name | BGR: Address Line 2 | BHR: House/Apartment Number | BIH: Street Name and Number | BLR: Street Name | BMU: Apartment Name or Number | BOL: Apartment Name or Number | BRA: Address Line 2 | BWA: P.O. Box Number | CAN: Address Line 2 | CHE: Address Line 2 | CHL: Address Line 2 | CHN: Address Line 2 | CMR: Locality | COD: Locality | COG: Address 2 | COL: Address Line 2 | CRI: Street Name and Number | CYP: Street Name and Number | CZE: Address Line 2 | DOM: Street Name and Number | DNK: Address Line 2 | ECU: Street Name and Number | EGY: Building Number | ESP: Address Line 2 | EST: Street Name and Number | ETH: Street Name and Number | FIN: Address Line 2 | FRA: Address Line 2 | GAB: Address 2 | GBR: Address Line 2 | GEO: Street Name and Number | GGY: Building Name | GHA: P.O. Box Number | GRC: Address Line 2 | GTM: Street Name and Number | HKG: Address Line 2 | HND: Locality | HRV: Street | HUN: Street Type | IDN: Street/House Number | IMN: P.O. Box Number | IND: Address Line 2 | IRL: Address Line 2 | IRN: Locality | IRQ: Street | ISL: Apartment Number | ISR: Street Name | ITA: Address Line 2 | JEY: Building Name | JOR: Street Name | JPN: Address Line 2 | KAZ: Street Name | KEN: P.O. Box Number | KGZ: Building Number, Street Name | KHM: Street Name and Number | KOR: Address Line 2 | KWT: District Name | LBN: Governorate | LKA: Street Number and Name | LSO: P.O. Box Number | LTU: Apartment Number | LUX: Number and Street Name | LVA: Building Number | MAR: Apartment Number | MEX: Address Line 2 | MLT: Apartment | MMR: Address Line 2 | MOZ: Street Name | MUS: Street Name and Number | MWI: P.O. Box Number | MYS: Address Line 2 | NAM: Post Office Name | NIC: Address Line | NCL: Apartment Number | NGA: Number and Street Name | NLD: Address Line 2 | NOR: Address Line 2 | NZL: Address Line 2 | OMN: Extra Address Line | PAN: Apartment Number and Name | PAK: House Number | PER: Street Name and Number | PHL: Street | POL: Address Line 2 | PRI: Address Line 2 | PRT: Address Line 2 | PRY: Building Name, Floor, Apartment | QAT: P.O. Box | ROU: Address Line 2 | RUS: House Number | SAU: Street | SGP: Unit Number and Building Name | SLV: Colony Name | SRB: Street Name and Number | SSD: Subbuilding | SVK: House Number/Conscription Number | SVN: Address Line 2 | SWE: Address Line 2 | SWZ: P.O. Box Number | TCD: Address Line 2 | THA: Floor | TUR: Address Line 2 | TWN: Address Line 2 | TZA: Apartment Number | UGA: P.O. Box Number | UKR: Street | URY: Street Name and Number | VEN: Extra Address Line | VIR: Street Number and Name | VNM: House Number, Street Number | XKX: Flat Number | ZAF: Complex | ZMB: Building | ZWE: P.O. Box Number/Street Number",
+          "City | USA: City | DEU: City | AGO: City | ARE: City | ARG: City | AUS: City | AUT: City | AZE: City | BEL: City | BGD: City | BGR: City | BHR: City | BIH: City | BLR: City/Village | BMU: City | BOL: City/Locality | BRA: City | BWA: Town | CAN: City | CHE: City | CHL: City | CHN: City/District | CMR: City | COD: City | COG: City | COL: City | CRI: City | CYP: City | CZE: City | DOM: City | DNK: City | ECU: City | EGY: City | ESP: City | EST: Locality | ETH: Locality | FIN: City | FRA: City | GAB: City | GBR: City | GEO: City | GGY: City | GHA: City | GRC: City | GTM: City | HKG: District | HND: City | HRV: City | HUN: City | IDN: City | IMN: City | IND: Town/City | IRL: City | IRN: City | IRQ: Governorate | ISL: City | ISR: City | ITA: City | JEY: City | JOR: City | JPN: City | KAZ: Province | KEN: City | KGZ: City | KHM: Province | KOR: City | KWT: Name of Town | LBN: City | LKA: City | LSO: City | LTU: Locality | LUX: City | LVA: City | MAR: City | MEX: City | MLT: City | MMR: Town | MOZ: City | MUS: City | MWI: City | MYS: City | NAM: City | NIC: City | NCL: City | NGA: City | NLD: City | NOR: City | NZL: City | OMN: City | PAN: Province | PAK: City | PER: City | PHL: City | POL: City | PRI: City | PRT: City | PRY: City | QAT: City | ROU: City | RUS: City/Locality | SAU: City | SGP: City | SLV: City | SRB: City | SSD: City | SVK: City | SVN: City | SWE: City | SWZ: City | TCD: City | THA: City | TUR: City | TWN: City | TZA: City | UGA: City | UKR: City | URY: City | VEN: City | VIR: City | VNM: City | XKX: City | ZAF: City/Town | ZMB: City | ZWE: City",
+          "District | USA: County | DEU: County | AGO: County | ARE: District | ARG: District | AUS: County | AUT: County | AZE: County | BEL: County | BGD: District | BGR: County | BHR: County | BIH: County | BLR: County | BMU: County | BOL: County | BRA: County | BWA: County | CAN: County | CHE: District | CHL: County | CHN: County | CMR: County | COD: County | COG: Province | COL: County | CRI: County | CYP: County | CZE: County | DOM: District Name | DNK: County | ECU: County | EGY: County | ESP: County | EST: County | ETH: County | FIN: County | FRA: County | GAB: Province | GBR: County | GEO: County | GGY: County | GHA: County | GRC: County | GTM: County | HKG: County | HND: County | HRV: District | HUN: District | IDN: District | IMN: District | IND: District | IRL: County | IRN: Province | IRQ: District | ISL: District | ISR: District | ITA: Province | JEY: County | JOR: District | JPN: County | KAZ: District | KEN: District | KGZ: District | KHM: Khan / District | KOR: County | KWT: District | LBN: District | LKA: District | LSO: District | LTU: District | LUX: District | LVA: District | MAR: District | MEX: District | MLT: District | MMR: District | MOZ: District | MUS: District | MWI: District | MYS: County | NAM: Suburb | NIC: District | NCL: District | NGA: District | NLD: District | NOR: County | NZL: Suburb | OMN: District | PAN: District | PAK: District | PER: District | PHL: District | POL: County | PRI: County | PRT: County | PRY: District | QAT: District | ROU: County | RUS: District | SAU: District | SGP: District | SLV: District | SRB: District | SSD: District | SVK: District | SVN: County | SWE: County | SWZ: District | TCD: District | THA: District | TUR: County | TWN: County | TZA: District | UGA: District | UKR: District | URY: District | VEN: District | VIR: District | VNM: District | XKX: District | ZAF: District/Suburb | ZMB: District | ZWE: District",
+          "State | USA: State | DEU: State | AGO: State | ARE: Region | ARG: Region | AUS: State | AUT: State | AZE: State | BEL: Province | BGD: Division | BGR: Region | BHR: Region | BIH: Region | BLR: Region | BMU: Region | BOL: Region | BRA: UF | BWA: UF | CAN: Province | CHE: Canton | CHL: Region | CHN: Province | CMR: Province | COD: Province | COG: State | COL: State | CRI: Province | CYP: Province | CZE: Region | DOM: Province | DNK: Region | ECU: Province | EGY: Province | ESP: Province | EST: Province | ETH: Province | FIN: Region | FRA: Department | GAB: State | GBR: State | GEO: State | GGY: State | GHA: State | GRC: Region | GTM: State | HKG: Area Code | HND: State | HRV: Region | HUN: State | IDN: Region | IMN: State | IND: State/UT | IRL: State | IRN: State | IRQ: State | ISL: State | ISR: State | ITA: State | JEY: State | JOR: State | JPN: State | KAZ: State | KEN: State | KGZ: State | KHM: State | KOR: State | KWT: State | LBN: State | LKA: Province | LSO: State | LTU: State | LUX: State | LVA: State | MAR: State | MEX: State | MLT: State | MMR: State, Region, and Union Territory | MOZ: State | MUS: State | MWI: State | MYS: Region | NAM: Region | NIC: Department | NCL: State | NGA: State | NLD: Province | NOR: Region | NZL: State | OMN: Region | PAN: State | PAK: State | PER: Province/Region | PHL: Region | POL: State | PRI: State | PRT: State | PRY: State | QAT: Region | ROU: Region | RUS: Region | SAU: Region | SGP: State | SLV: State | SRB: State | SSD: State | SVK: State | SVN: Region | SWE: State | SWZ: State | TCD: State | THA: Region | TUR: State | TWN: State | TZA: Region | UGA: State | UKR: Region | URY: State | VEN: State | VIR: State | VNM: State | XKX: State | ZAF: Region | ZMB: State | ZWE: State",
+          "Zip Code | USA: ZIP | DEU: Postal Code | AGO: Postal Code | ARE: Postal Code | ARG: Postal Code | AUS: Postal Code | AUT: Postal Code | AZE: Postal Code | BEL: Postal Code | BGD: Postal Code | BGR: Postal Code | BHR: Postal Code | BIH: Postal Code | BLR: Postal Code | BMU: Postal Code | BOL: Postal Code | BRA: CEP | BWA: CEP | CAN: Postal Code | CHE: Postal Code | CHL: Postal Code | CHN: Postal Code | CMR: Postal Code | COD: Postal Code | COG: Zip Code | COL: Postal Code | CRI: Postal Code | CYP: Postal Code | CZE: Postal Code | DOM: Postal Code | DNK: Postal Code | ECU: Postal Code | EGY: Postal Code | ESP: Postal Code | EST: Postal Code | ETH: Postal Code | FIN: Postal Code | FRA: Postal Code | GAB: Zip Code | GBR: Postal Code | GEO: Postal Code | GGY: Postal Code | GHA: Postal Code | GRC: Postal Code | GTM: Postal Code | HKG: Postal Code | HND: Postal Code | HRV: Postal Code | HUN: Postal Code | IDN: Postal Code | IMN: Postal Code | IND: PIN | IRL: Postal Code | IRN: Postal Code | IRQ: Postal Code | ISL: Postal Code | ISR: Postal Code | ITA: CAP | JEY: Postal Code | JOR: Postal Code | JPN: Postal Code | KAZ: Postal Code | KEN: Postal Code | KGZ: Postal Code | KHM: Postal Code | KOR: Postal Code | KWT: Postal Code | LBN: Zip Code | LKA: Postal Code | LSO: Postal Code | LTU: Postal Code | LUX: Postal Code | LVA: Postal Code | MAR: Postal Code | MEX: Postal Code | MLT: Postal Code | MMR: Postal Code | MOZ: Postal Code | MUS: Postal Code | MWI: Zip Code | MYS: Postal Code | NAM: Postal Code | NIC: Postal Code | NCL: Postal Code | NGA: Postal Code | NLD: Postal Code | NOR: Postal Code | NZL: Postal Code | OMN: Postal Code | PAN: Postal Code | PAK: Postal Code | PER: Postal Code | PHL: Postal Code | POL: Postal Code | PRI: ZIP | PRT: Postal Code | PRY: Postal Code | QAT: Postal Code | ROU: Postal Code | RUS: Postal Code | SAU: Postal Code | SGP: Postal Code | SLV: Postal Code | SRB: Postal Code | SSD: Zip Code | SVK: Postal Code | SVN: Postal Code | SWE: Postal Code | SWZ: Postal Code | TCD: Postal Code | THA: Postal Code | TUR: Postal Code | TWN: Postal Code | TZA: Postal Code | UGA: Zip Code | UKR: Postal Code | URY: Postal Code | VEN: Postal Code | VIR: Postal Code | VNM: Postal Code | XKX: Postal Code | ZAF: Postal Code | ZMB: Postal Code | ZWE: Zip Code",
+          "End Date"
+        ],
+        "col_count": 18
+      },
+      "Pay Grade": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "paygradeLevel",
+          "status",
+          "end-date"
+        ],
+        "labels": [
+          "Pay Grade ID",
+          "Pay Grade Name",
+          "Start Date",
+          "Pay Grade Level",
+          "Status",
+          "End Date"
+        ],
+        "col_count": 6
+      },
+      "Pay Range": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "status",
+          "payGrade.externalCode",
+          "LegalEntity.externalCode",
+          "minimumPay",
+          "midPoint",
+          "maximumPay",
+          "frequencyCode",
+          "currency",
+          "end-date",
+          "geozone.externalCode"
+        ],
+        "labels": [
+          "Pay Range ID",
+          "Pay Range Name",
+          "Start Date",
+          "Status",
+          "Pay Grade ID",
+          "Legal Entity",
+          "Minimum Pay",
+          "Mid Point",
+          "Maximum Pay",
+          "Frequency",
+          "Currency",
+          "End Date",
+          "GeoZone Code"
+        ],
+        "col_count": 13
+      },
+      "Pay Group": {
+        "odata_fields": [
+          "externalCode",
+          "name.en_US",
+          "name.defaultValue",
+          "effectiveStartDate",
+          "effectiveStatus",
+          "paymentFrequency.externalCode",
+          "[OPERATOR]",
+          "payrollVendorId",
+          "earliestChangeDate",
+          "cust_retroActive.externalCode",
+          "cust_retroDays",
+          "paymentFrequencyFO.externalCode"
+        ],
+        "labels": [
+          "Pay Group ID",
+          "US English",
+          "Default Value",
+          "Effective Date",
+          "Status(Valid Values : A/I A for Active I for Inactive )",
+          "Picklist Value.External Code",
+          "Supported operators: Delimit, Clear and Delete",
+          "Payroll Vendor ID",
+          "Earliest Change Date",
+          "Picklist Value.External Code",
+          "Retroactive Days Allowed",
+          "frequency.externalCode"
+        ],
+        "col_count": 12
+      },
+      "Pay Component": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "status",
+          "payComponentType",
+          "is-earning",
+          "currency",
+          "payComponentValue",
+          "frequencyCode",
+          "recurring",
+          "basePayComponentGroup",
+          "canOverride",
+          "displayOnSelfService",
+          "usedForCompPlanning",
+          "target",
+          "maxFractionDigits",
+          "isEndDatedPayment",
+          "taxTreatment",
+          "number"
+        ],
+        "labels": [
+          "Pay Component ID",
+          "Pay Component Name",
+          "Pay Component Start Date",
+          "Status",
+          "Pay Component Type",
+          "Is Earning",
+          "Currency",
+          "Pay Component Value",
+          "Frequency",
+          "Recurring",
+          "Base Pay Component Group",
+          "Can Override",
+          "Display on Self Service",
+          "Used for Comp Planning",
+          "Target",
+          "Maximum Decimal Places",
+          "Enable End-Dated Payments",
+          "Tax Treatment",
+          "number"
+        ],
+        "col_count": 19
+      },
+      "Pay Component Group": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "status",
+          "showOnCompUI",
+          "useForComparatioCalc",
+          "useForRangePenetration",
+          "payComponent.externalCode",
+          "name.en_DEBUG",
+          "maxFractionDigits",
+          "sortOrder"
+        ],
+        "labels": [
+          "Pay Component Group ID",
+          "Pay Component Group Name",
+          "Pay Component Group Start Date",
+          "Status",
+          "Display on Comp UI",
+          "Use for Comparatio Calculation",
+          "Use for Range Penetration",
+          "Pay Component ID",
+          "English (DEBUG)",
+          "Maximum Decimal Places",
+          "Sort Order"
+        ],
+        "col_count": 11
+      },
+      "Event Reason": {
+        "odata_fields": [
+          "externalCode",
+          "name",
+          "start-date",
+          "status",
+          "event",
+          "emplStatus",
+          "custom-string1",
+          "implicit-position-action",
+          "include-in-work-experience",
+          "payroll-event",
+          "description",
+          "end-date"
+        ],
+        "labels": [
+          "Event Reason ID",
+          "Event Reason Name",
+          "Start Date",
+          "Status",
+          "Event",
+          "Employee Status",
+          "Termination Type",
+          "Follow-Up Activity in Position",
+          "Display in Internal Job History Portlet",
+          "Payroll Event",
+          "Description",
+          "End Date"
+        ],
+        "col_count": 12
+      },
+      "Time Type": {
+        "odata_fields": [
+          "externalCode",
+          "externalName.en_US",
+          "externalName.defaultValue",
+          "loaStartEventReason.externalCode",
+          "loaEndEventReason.externalCode",
+          "adminWorkflow.externalCode",
+          "country.code",
+          "unit",
+          "allowedFractionsUnitDay",
+          "calculationMethod",
+          "activateCancellationWorkflow",
+          "category",
+          "flexibleRequestingAllowed",
+          "absenceClass",
+          "undeterminedEndDateAllowed",
+          "requestingOnNonWorkingDaysAllowed",
+          "balanceCalculationSetting",
+          "externalName.en_DEBUG",
+          "workflowConfiguration.externalCode",
+          "allowedFractionsUnitHour",
+          "postingPriority",
+          "postingOrder",
+          "allowedRequestingIncrement",
+          "countingMethod.externalCode",
+          "accrualRecalculationRelevance",
+          "collisionGrouping.externalCode",
+          "absenceRetentionGroup.externalCode",
+          "absenceRequestingWithinFlextimeBandwidthAllowed",
+          "absenceCountingConfiguration.externalCode"
+        ],
+        "labels": [
+          "External Code",
+          "US English",
+          "Default Value",
+          "eventReason.externalCode",
+          "eventReason.externalCode",
+          "wfConfig.externalCode",
+          "Country/Region.Country/Region Code (3 char)",
+          "Unit(Valid Values : HOURS/DAYS HOURS for Hour(s) DAYS for Day(s) )",
+          "Permitted Fractions For Unit Day(Valid Values : FULL_DAY/HALF_DAY/QUARTER_DAY FULL_DAY for Only full day bookings allowed HALF_DAY for Half day bookings allowed QUARTER_DAY for Quarter day bookings allowed )",
+          "Duration Display According To(Valid Values : WORKSCHEDULE/CALENDARDAYS/DEDUCTIONQUANTITY WORKSCHEDULE for Work Schedule CALENDARDAYS for Calendar Days DEDUCTIONQUANTITY for Deduction Quantity )",
+          "Activate Cancellation Workflow(Valid Values : TRUE/FALSE)",
+          "Classification(Valid Values : ATTENDANCE/ABSENCE/ONCALL/BREAK/EXTRA ATTENDANCE for Attendance ABSENCE for Absence ONCALL for On Call BREAK for Break EXTRA for Extra )",
+          "Flexible Requesting Allowed(Valid Values : TRUE/FALSE)",
+          "Absence Class(Valid Values : UNSPECIFIED/SICKNESS UNSPECIFIED for Unspecified SICKNESS for Sickness )",
+          "Undetermined End Date Allowed(Valid Values : TRUE/FALSE)",
+          "Requesting on Non-Working Days Allowed(Valid Values : TRUE/FALSE)",
+          "Balance Calculation Setting(Valid Values : BOOKING_LOGIC/STANDARD BOOKING_LOGIC for Consider bookings after calculation date STANDARD for Consider bookings until calculation date )",
+          "English (DEBUG)",
+          "wfConfig.externalCode",
+          "Permitted Fractions For Unit Hour(Valid Values : FULL_DAY/FULL_HOURS/HOURS_MINUTES   FULL_DAY for Only full day bookings allowed  FULL_HOURS for Full hour bookings allowed  HOURS_MINUTES for Allow requesting in hours and minutes  )",
+          "Posting Priority(Valid Values : BASED_ON_TIME_ACCOUNT_PERIOD_FIRST/BASED_ON_POSTING_ORDER_ONLY   BASED_ON_TIME_ACCOUNT_PERIOD_FIRST for Post to time accounts by defined time account period.  BASED_ON_POSTING_ORDER_ONLY for Post to time accounts by posting rules only.  )",
+          "Posting Order(Valid Values : NEWEST_FIRST/OLDEST_FIRST/NEWEST_FIRST_BASED_ON_BOOKABLE_PERIOD/OLDEST_FIRST_BASED_ON_BOOKABLE_PERIOD   NEWEST_FIRST for Newest First by Validity Period  OLDEST_FIRST for Oldest First by Validity Period  NEWEST_FIRST_BASED_ON_BOOKABLE_PERIOD for Newest First by Bookable Period  OLDEST_FIRST_BASED_ON_BOOKABLE_PERIOD for Oldest First by Bookable Period  )",
+          "Allow Requests In Increments Of [Minutes]",
+          "Absence Counting Method.External Code",
+          "Accrual Recalculation Relevance(Valid Values : NONE/FULL   NONE for None  FULL for Full  )",
+          "Time Type Collision Grouping.External Code",
+          "Time Management Retention Group.External Code",
+          "Allow Absence Requesting Within Flextime Bandwidth(Valid Values : TRUE/FALSE)",
+          "Absence Counting Configuration.External Code"
+        ],
+        "col_count": 29
+      },
+      "Payment Method": {
+        "odata_fields": [
+          "externalCode",
+          "externalName.defaultValue",
+          "externalName.en_US",
+          "toPaymentMethodAssignmentV3.country.code",
+          "externalName.en_DEBUG",
+          "toPaymentMethodAssignmentV3.externalCode",
+          "[OPERATOR]"
+        ],
+        "labels": [
+          "Payment Method.External Code",
+          "Default Value",
+          "US English",
+          "Country/Region.Country/Region Code (3 char)",
+          "English (DEBUG)",
+          "externalCode",
+          "Supported operators: Delimit, Clear and Delete"
+        ],
+        "col_count": 7
+      },
+      "Pay Type": {
+        "odata_fields": [
+          "externalCode",
+          "externalName.defaultValue",
+          "externalName.en_US",
+          "toCustomPayTypeAssignment.country.code",
+          "externalName.en_DEBUG",
+          "toCustomPayTypeAssignment.externalCode"
+        ],
+        "labels": [
+          "Customized Pay Type.External Code",
+          "Default Value",
+          "US English",
+          "Country/Region.Country/Region Code (3 char)",
+          "English (DEBUG)",
+          "externalCode"
+        ],
+        "col_count": 6
+      },
+      "Vendor": {
+        "odata_fields": [
+          "vendorCode",
+          "effectiveStartDate",
+          "vendorName",
+          "effectiveStatus"
+        ],
+        "labels": [
+          "Vendor Code",
+          "Effective Date",
+          "Vendor Name",
+          "Status(Valid Values : A/I A for Active I for Inactive )"
+        ],
+        "col_count": 4
+      }
+    }
+  },
+  "RBP": {
+    "template_path": "Workbooks Templates/1_26 Version_ JVL - Employee Field Data & RBP.xlsx",
+    "sheets": {
+      "Permission Group Assignment": {
+        "odata_fields": [
+          "Role",
+          "High-Level Access",
+          "Functional Description",
+          "Granted Users",
+          "Target Population"
+        ],
+        "labels": [
+          "Member Self US",
+          "Edit",
+          "Grants US employees the ability to view & modify their own employee data.",
+          "GG/TG - US Members",
+          "Self"
+        ],
+        "col_count": 5
+      },
+      "Field-Level Access & Actions": {
+        "odata_fields": [
+          "Client Custom Req.",
+          "Profile Section",
+          "Field ID",
+          "Field Name",
+          "Member Public Global",
+          "Member Self US",
+          "Member Self International",
+          "Coach Self Service US",
+          "Coach US Indirect Reports",
+          "Coach International",
+          "Coach International Indirect Reports",
+          "Member Services Team",
+          "HR Generalists",
+          "System Admin",
+          "Data Type",
+          "Enabled?",
+          "Required?",
+          "Default Visibility",
+          "Max Length",
+          "Max Decimal Digits",
+          "Dropdown Type",
+          "Picklist/Object ID",
+          "Parent Field ID",
+          "HRIS Sync",
+          "Legacy HRIS Field ID"
+        ],
+        "labels": [
+          "",
+          "Basic Info",
+          "",
+          "",
+          "View",
+          "View",
+          "View",
+          "View ",
+          "View ",
+          "View ",
+          "View ",
+          "View ",
+          "View ",
+          "View",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "col_count": 25
+      },
+      "HR & Admin Settings RBP": {
+        "odata_fields": [
+          "Permissions",
+          "Member Public Global",
+          "Member Self US",
+          "Member Self International",
+          "Coach Self Service US",
+          "Coach US Indirect Reports",
+          "Coach International",
+          "Coach International Indirect Reports",
+          "Member Services Team",
+          "HR Generalists"
+        ],
+        "labels": [
+          "Employee Data",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "col_count": 10
+      },
+      "Employee Central Rules": {
+        "odata_fields": [
+          "HRIS Element / Object",
+          "Rule Name",
+          "Rule Trigger Type",
+          "Field to Trigger onChange Rule",
+          "Functional Description",
+          "Rule Description",
+          "Rule Base Object",
+          "Rule ID"
+        ],
+        "labels": [
+          "Compensation Information",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "col_count": 8
+      },
+      "System Configuration Settings": {
+        "odata_fields": [
+          "System Configuration Setting",
+          "Selection",
+          "Description"
+        ],
+        "labels": [
+          "Org Chart Configuration",
+          "",
+          ""
+        ],
+        "col_count": 3
+      },
+      "Document Generation Templates": {
+        "odata_fields": [
+          "US"
+        ],
+        "labels": [
+          "Document Generation Template"
+        ],
+        "col_count": 1
+      },
+      "Daily Jobs": {
+        "odata_fields": [
+          "Scheduled",
+          "Code",
+          "Job Type",
+          "Owner",
+          "Recurring Frequency",
+          "Job Start Time",
+          "Comments"
+        ],
+        "labels": [
+          "Provisioning Job",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "col_count": 7
+      }
+    }
+  },
+  "WF": {
+    "template_path": "Workbooks Templates/1_26 Version_ JVL - Workflow Notifications & Messages.xlsx",
+    "sheets": {
+      "Workflows Tab": {
+        "odata_fields": [
+          "Portlet / Object",
+          "Functional Scenario",
+          "Initiator",
+          "Workflow Step",
+          "Approver/CC Type",
+          "Approver/CC Role",
+          "Relationship to Approver",
+          "Context",
+          "Edit Transaction Capability",
+          "Remind in Days",
+          "Is Delegate Supported",
+          "Alert Message",
+          "Business Rule Trigger",
+          "Workflow ID"
+        ],
+        "labels": [
+          "Johnsonville Workflows",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "col_count": 14
+      },
+      "WF Processes": {
+        "odata_fields": [
+          "Process",
+          "Portlet",
+          "Notes",
+          "Initiator",
+          "Approver 1",
+          "Approver 2",
+          "Approver 3",
+          "Notifications",
+          "Notes2"
+        ],
+        "labels": [
+          "Home Address Change",
+          "Address",
+          "",
+          "Employee",
+          "MS Admin",
+          "",
+          "",
+          "Payroll Via Report*",
+          "County change requires approval"
+        ],
+        "col_count": 9
+      },
+      "Dynamic Roles": {
+        "odata_fields": [
+          "Dynamic Role ID",
+          "Dynamic Role",
+          "Description",
+          "Base Object",
+          "Job Classification",
+          "Department",
+          "Division",
+          "Location",
+          "Legal Entity",
+          "Business Unit",
+          "Cost Center",
+          "Pay Grade",
+          "Pay Group",
+          "Event Reason",
+          "Legal Entity Country",
+          "Location Group",
+          "Job Family",
+          "Pay Range",
+          "Job Function",
+          "Region",
+          "Add Custom Fields",
+          "Approver Type",
+          "Approver",
+          "Resolver",
+          "Resolver Type"
+        ],
+        "labels": [
+          "GLB_MS_Administrator",
+          "GLB HR Admin",
+          "",
+          "Job Information",
+          "",
+          "",
+          "",
+          "",
+          "Salm Partners (1011)",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Dynamic Group",
+          "Salm MS",
+          "",
+          ""
+        ],
+        "col_count": 25
+      },
+      "Workflow Groups": {
+        "odata_fields": [
+          "Workflow Group",
+          "Member Assigned"
+        ],
+        "labels": [
+          "JVL MS Admin",
+          "Kiersten Byer\nEric Hummitzch\nKiezha Charmine"
+        ],
+        "col_count": 2
+      },
+      "Alert Messages": {
+        "odata_fields": [
+          "Code",
+          "Name",
+          "Alert Header",
+          "Alert Description"
+        ],
+        "labels": [
+          "GLB_AlertForContractEnd1Month",
+          "GLB_AlertForContractEnd1Month",
+          "Contract End Date for [[SUBJECT_USER]] is less that 1 month away",
+          "Contract End Date for [[SUBJECT_USER]] is less that 1 month away, please decide appropriate action"
+        ],
+        "col_count": 4
+      },
+      "Message Definitions": {
+        "odata_fields": [
+          "Client Custom",
+          "Code",
+          "Name",
+          "Warning/Error Text"
+        ],
+        "labels": [
+          "False",
+          "AlertMessage_PayGroup_PayComp",
+          "AlertMessage_PayGroup_PayComp",
+          "Pay Group does NOT align with the pay component selected. Please, review."
+        ],
+        "col_count": 4
+      },
+      "Workflow Configuration Settings": {
+        "odata_fields": [
+          "Workflow Email Configuration",
+          "Email Recipient",
+          "Email Notification",
+          "Description"
+        ],
+        "labels": [
+          "Workflow Initiated",
+          "Current Approver",
+          "Workflow Pending",
+          "Workflow initiated only applies for the first approval step. The person, who needs to approve the workflow (current approver) is notified in standard with template WORKFLOW ACTION PENDING NOTIFICATION."
+        ],
+        "col_count": 4
+      },
+      "Email Notification Templates": {
+        "odata_fields": [
+          "Template Name",
+          "Email Subject",
+          "Email Body"
+        ],
+        "labels": [
+          "Workflow Approved",
+          "The [[EVENT_REASON]] action for [[EMPLOYEE]] has been approved\n",
+          "Hello [[RECIEPIENT]],\nThe [[EVENT_REASON]] for [[EMPLOYEE]] has been approved.  This change goes into effect on [[RECENT_APPROVAL_DATE]].\nPlease access the details [[VIEW_LINK]].\nRespectfully,\nYour HR Team"
+        ],
+        "col_count": 3
+      }
+    }
+  }
+}

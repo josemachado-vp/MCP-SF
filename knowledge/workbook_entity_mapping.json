@@ -1,0 +1,102 @@
+{
+  "FO": {
+    "Picklist": {
+      "entity": "PicklistV2",
+      "expand": "values",
+      "flatten_array_field": "values",
+      "manual": false,
+      "field_aliases": {}
+    },
+    "Legal Entity":                  { "entity": "FOCompany",             "manual": false, "field_aliases": {} },
+    "Legal entity-Business Unit":    { "entity": "FOBusinessUnit",        "manual": false, "field_aliases": {} },
+    "Business Unit":                 { "entity": "FOBusinessUnit",        "manual": false, "field_aliases": {} },
+    "Business Unit-Division":        { "entity": "FODivision",            "manual": false, "field_aliases": {} },
+    "Division":                      { "entity": "FODivision",            "manual": false, "field_aliases": {} },
+    "Division-Department":           { "entity": "FODepartment",          "manual": false, "field_aliases": {} },
+    "Department":                    { "entity": "FODepartment",          "manual": false, "field_aliases": {} },
+    "Department-Cost Center":        { "entity": "FOCostCenter",          "manual": false, "field_aliases": {} },
+    "Cost Center":                   { "entity": "FOCostCenter",          "manual": false, "field_aliases": {} },
+    "Job Family":                    { "entity": "JobClassificationGroup","manual": false, "field_aliases": {} },
+    "Job Family-Job Function":       { "entity": "JobFunction",           "manual": false, "field_aliases": {} },
+    "Job Function":                  { "entity": "JobFunction",           "manual": false, "field_aliases": {} },
+    "Job Function-Job Code":         { "entity": "JobClassification",     "manual": false, "field_aliases": {} },
+    "Job Code":                      { "entity": "JobClassification",     "manual": false, "field_aliases": {} },
+    "Region":                        { "entity": "Region",                "manual": false, "field_aliases": {} },
+    "Location Group": {
+      "entity": "FOLocationGroup", "manual": false,
+      "field_aliases": { "start-date": "effectiveStartDate", "end-date": "effectiveEndDate" }
+    },
+    "Location": {
+      "entity": "FOLocation", "manual": false,
+      "field_aliases": {
+        "start-date": "startDate", "end-date": "endDate",
+        "address.zip-code": "address.zipCode"
+      }
+    },
+    "Pay Grade": {
+      "entity": "PayGrade", "manual": false,
+      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
+    },
+    "Pay Range": {
+      "entity": "PayRange", "manual": false,
+      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
+    },
+    "Pay Group":           { "entity": "FOPayGroup",          "manual": false, "field_aliases": {} },
+    "Pay Component": {
+      "entity": "PayComponent", "manual": false,
+      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
+    },
+    "Pay Component Group": {
+      "entity": "PayComponentGroup", "manual": false,
+      "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
+    },
+    "Event Reason": {
+      "entity": "EventReason", "manual": false,
+      "field_aliases": {
+        "start-date": "startDate", "end-date": "endDate",
+        "custom-string1": "customString1",
+        "implicit-position-action": "implicitPositionAction",
+        "include-in-work-experience": "includeInWorkExperience",
+        "payroll-event": "payrollEvent"
+      }
+    },
+    "Time Type":       { "entity": "TimeType",       "manual": false, "field_aliases": {} },
+    "Payment Method":  { "entity": "PaymentMethod",  "manual": false, "field_aliases": {} },
+    "Pay Type":        { "entity": "PayType",         "manual": false, "field_aliases": {} },
+    "Vendor":          { "entity": "Vendor",          "manual": false, "field_aliases": {} }
+  },
+  "WF": {
+    "Workflows Tab":                  { "entity": "WorkflowConfiguration", "expand": "steps", "manual": false, "field_aliases": {} },
+    "WF Processes":                   { "entity": "WorkflowConfiguration", "manual": false, "field_aliases": {} },
+    "Dynamic Roles":                  { "entity": "DynamicGroup",          "manual": false, "field_aliases": {} },
+    "Workflow Groups":                { "entity": "WorkflowGroup",         "manual": false, "field_aliases": {} },
+    "Alert Messages":                 { "entity": "AlertMessage",          "manual": false, "field_aliases": {} },
+    "Message Definitions":            { "entity": "RuleHeaderBean",        "manual": false, "field_aliases": {},
+                                        "filter": "contains(ruleDescription,'RAISE_MESSAGE')" },
+    "Email Notification Templates":   { "entity": "EmailNotification",     "manual": false, "field_aliases": {} },
+    "Workflow Configuration Settings":{ "entity": null,                    "manual": true,  "field_aliases": {} }
+  },
+  "RBP": {
+    "Permission Group Assignment":  { "entity": null, "manual": true, "field_aliases": {} },
+    "Field-Level Access & Actions": { "entity": null, "manual": true, "field_aliases": {} },
+    "HR & Admin Settings RBP":      { "entity": null, "manual": true, "field_aliases": {} },
+    "Employee Central Rules": {
+      "entity": "RuleHeaderBean",
+      "manual": false,
+      "field_aliases": {},
+      "columns_map": {
+        "HRIS Element / Object": "hrisElement",
+        "Rule Name": "ruleName",
+        "Rule Trigger Type": "triggerType",
+        "Field to Trigger onChange Rule": "triggerField",
+        "Functional Description": "",
+        "Rule Description": "ruleDescription",
+        "Rule Base Object": "baseObject",
+        "Rule ID": "ruleId"
+      }
+    },
+    "System Configuration Settings":  { "entity": null, "manual": true, "field_aliases": {} },
+    "Document Generation Templates":  { "entity": null, "manual": true, "field_aliases": {} },
+    "Daily Jobs":                      { "entity": null, "manual": true, "field_aliases": {} }
+  }
+}
