@@ -51,7 +51,7 @@
       "field_aliases": { "start-date": "startDate", "end-date": "endDate" }
     },
     "Event Reason": {
-      "entity": "EventReason", "manual": false,
+      "entity": "FOEventReason", "manual": false,
       "field_aliases": {
         "start-date": "startDate", "end-date": "endDate",
         "custom-string1": "customString1",
