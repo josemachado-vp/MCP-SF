@@ -115,6 +115,12 @@ async def _fetch_all_records(
     return records
 
 
+def _clear_template_data_rows(ws) -> None:
+    """Delete all rows from row 3 onward (template instruction/example rows)."""
+    if ws.max_row >= 3:
+        ws.delete_rows(3, ws.max_row - 2)
+
+
 def _write_records_to_sheet(
     ws,
     odata_fields: list[str],
@@ -122,7 +128,8 @@ def _write_records_to_sheet(
     field_aliases: dict,
     flatten_array_field: str = "",
 ) -> int:
-    """Write records to worksheet starting at row 3. Returns number of rows written."""
+    """Delete template rows 3+, then write SF records starting at row 3. Returns rows written."""
+    _clear_template_data_rows(ws)
     rows_written = 0
 
     for record in records:
@@ -176,7 +183,7 @@ async def generate_fo_workbook(
     col_mapping = _load_json("workbook_column_mapping.json")
     entity_mapping = _load_json("workbook_entity_mapping.json")
 
-    fo_col = col_mapping["FO"]
+    fo_col = col_mapping["FO"]["sheets"]
     fo_ent = entity_mapping["FO"]
 
     all_sheets = list(fo_col.keys())
@@ -276,7 +283,7 @@ async def generate_workflow_workbook(
     col_mapping = _load_json("workbook_column_mapping.json")
     entity_mapping = _load_json("workbook_entity_mapping.json")
 
-    wf_col = col_mapping["WF"]
+    wf_col = col_mapping["WF"]["sheets"]
     wf_ent = entity_mapping["WF"]
 
     wb = openpyxl.load_workbook(str(TEMPLATE_WF))
