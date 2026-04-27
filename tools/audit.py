@@ -18,6 +18,7 @@ from fastmcp import FastMCP
 
 from helpers.sf_client import SFClient
 from helpers.credentials import resolve_api_host, get_bearer_token
+from helpers.pii_filter import scrub_response
 from helpers.odata_utils import escape_odata_string, validate_field_name
 
 audit_mcp = FastMCP(name="SF Audit Tools")
@@ -102,6 +103,14 @@ async def audit_employee_data(
                 "$filter": f"personIdExternal eq '{safe_user_id}'",
             })
 
+        _key_entity = {
+            "jobs": "EmpJob",
+            "employment": "EmpEmployment",
+            "personal": "PerPersonal",
+            "compensation": "EmpCompensation",
+            "emails": "PerEmail",
+        }
+
         keys = list(tasks.keys())
         results = await asyncio.gather(*tasks.values(), return_exceptions=True)
         data = {}
@@ -114,7 +123,9 @@ async def audit_employee_data(
                 })
                 data[k] = []
             else:
-                data[k] = r.get("d", {}).get("results", [])
+                raw = r.get("d", {}).get("results", [])
+                scrubbed, _ = scrub_response(_key_entity.get(k, k), raw)
+                data[k] = scrubbed
 
     # Check: Employment record exists
     if "employment" in requested:
@@ -462,7 +473,9 @@ async def trace_rule_execution(
             "user_id": user_id,
         }
 
-    emp_data = emp_records[0]
+    emp_data_raw = emp_records[0]
+    scrubbed_emp, _ = scrub_response(primary_entity, [emp_data_raw])
+    emp_data = scrubbed_emp[0] if scrubbed_emp else emp_data_raw
     rules = rules_result.get("d", {}).get("results", [])
 
     trace_results = []

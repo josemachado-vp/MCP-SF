@@ -53,8 +53,9 @@
                 "PerNationalId": {
                     "description": "National ID / document numbers",
                     "key_fields": ["personIdExternal", "country", "cardType"],
-                    "common_select": "personIdExternal,country,cardType,nationalId",
-                    "nl_hints": ["national id", "document", "id number", "ssn", "identification"]
+                    "common_select": "personIdExternal,country,cardType",
+                    "nl_hints": [],
+                    "pii_restricted": true
                 },
                 "EmpJobRelationships": {
                     "description": "Job relationships (HR manager, matrix manager, etc.)",

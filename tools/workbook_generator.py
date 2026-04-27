@@ -255,7 +255,8 @@ async def generate_fo_workbook(
         ws = wb[sheet_name]
 
         if not records:
-            warnings.append(f"Sheet '{sheet_name}': 0 records returned from SF")
+            _clear_template_data_rows(ws, from_row=3)
+            warnings.append(f"Sheet '{sheet_name}': 0 records returned from SF — template example rows cleared")
             summary[sheet_name] = 0
             sheets_populated += 1
             continue
@@ -334,6 +335,9 @@ async def generate_workflow_workbook(
 
     for sheet_name, records, is_manual in results:
         if is_manual:
+            if sheet_name in wb.sheetnames:
+                _clear_template_data_rows(wb[sheet_name], from_row=2)
+                warnings.append(f"Sheet '{sheet_name}': cleared (no OData API — fill manually from Admin Center)")
             sheets_skipped += 1
             continue
         if sheet_name not in wb.sheetnames:
@@ -343,27 +347,42 @@ async def generate_workflow_workbook(
 
         ws = wb[sheet_name]
         if not records:
-            warnings.append(f"Sheet '{sheet_name}': 0 records returned from SF")
+            _clear_template_data_rows(ws, from_row=2)
+            warnings.append(f"Sheet '{sheet_name}': 0 records returned from SF — template example rows cleared")
             summary[sheet_name] = 0
             sheets_populated += 1
             continue
 
         ent_cfg = wf_ent.get(sheet_name, {})
         columns_map: dict[str, str] = ent_cfg.get("columns_map", {})
+        flatten = ent_cfg.get("flatten_array_field", "")
 
         # WF template: row 1 = human labels (no OData paths, no instruction row)
-        # Read actual column headers from the template row 1
         col_headers = [cell.value for cell in ws[1]]
         _clear_template_data_rows(ws, from_row=2)
 
-        rows_written = 0
-        for record in records:
+        def _write_row(rec: dict) -> None:
             row = []
             for header in col_headers:
                 sf_field = columns_map.get(header, "") if header else ""
-                row.append(_resolve_nested_field(record, sf_field) if sf_field else "")
+                row.append(_resolve_nested_field(rec, sf_field) if sf_field else "")
             ws.append(row)
-            rows_written += 1
+
+        rows_written = 0
+        for record in records:
+            if flatten:
+                nested = record.get(flatten, {})
+                sub_records = nested.get("results", []) if isinstance(nested, dict) else []
+                if not sub_records:
+                    continue
+                for sub in sub_records:
+                    flat = dict(record)
+                    flat[flatten] = sub
+                    _write_row(flat)
+                    rows_written += 1
+            else:
+                _write_row(record)
+                rows_written += 1
 
         summary[sheet_name] = rows_written
         sheets_populated += 1

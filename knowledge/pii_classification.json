@@ -1,0 +1,131 @@
+{
+  "version": "1.0",
+  "description": "PII classification config aligned with Veritas Prime data classification policy",
+  "classification_tiers": {
+    "HIGHLY_CONFIDENTIAL": {
+      "level": 4,
+      "action": "block",
+      "message": "This data is classified as HIGHLY CONFIDENTIAL. Access is blocked by the PII protection policy."
+    },
+    "CONFIDENTIAL": {
+      "level": 3,
+      "action": "warn_and_redact",
+      "message": "This data is classified as CONFIDENTIAL. Some fields have been redacted.",
+      "indirect_combination_threshold": 3
+    },
+    "INTERNAL": {
+      "level": 2,
+      "action": "allow",
+      "message": null
+    },
+    "PUBLIC": {
+      "level": 1,
+      "action": "allow",
+      "message": null
+    }
+  },
+  "blocked_entities": [
+    {
+      "entity": "PerNationalId",
+      "tier": "HIGHLY_CONFIDENTIAL",
+      "reason": "Contains national identification numbers (SSN, passport, driver's license, etc.)"
+    }
+  ],
+  "blocked_fields": {
+    "HIGHLY_CONFIDENTIAL": {
+      "strong_pii": [
+        "nationalId",
+        "socialSecurityNumber",
+        "ssn",
+        "passportNumber",
+        "driversLicense",
+        "biometricData",
+        "personalMobile",
+        "personalPhone",
+        "homeAddress",
+        "streetAddress",
+        "fullAddress",
+        "geolocation",
+        "latitude",
+        "longitude",
+        "persistentCookieId",
+        "deviceId"
+      ],
+      "financial_pii": [
+        "bankAccount",
+        "bankAccountNumber",
+        "routingNumber",
+        "iban",
+        "swiftCode",
+        "creditCard",
+        "creditCardNumber",
+        "debitCard",
+        "debitCardNumber",
+        "payrollAccountNumber",
+        "directDepositAccount"
+      ],
+      "health_pii": [
+        "diagnosis",
+        "treatment",
+        "prescription",
+        "prescriptionHistory",
+        "insuranceId",
+        "insuranceMemberId",
+        "healthPlanId",
+        "medicalRecordNumber"
+      ],
+      "auth_pii": [
+        "password",
+        "passwordHash",
+        "mfaToken",
+        "securityQuestion",
+        "securityAnswer",
+        "recoveryCode",
+        "pin"
+      ]
+    },
+    "CONFIDENTIAL": {
+      "indirect_pii": [
+        "dateOfBirth",
+        "birthDate",
+        "gender",
+        "zipCode",
+        "postalCode",
+        "maritalStatus",
+        "nationality",
+        "ethnicity",
+        "religion"
+      ]
+    }
+  },
+  "field_pattern_blocklist": [
+    "ssn*",
+    "ssn_*",
+    "national_id*",
+    "nationalid*",
+    "bank_acct*",
+    "bankacct*",
+    "routing_num*",
+    "passport_*",
+    "license_num*",
+    "credit_card*",
+    "creditcard*",
+    "debit_card*",
+    "debitcard*",
+    "tax_id*",
+    "taxid*"
+  ],
+  "expand_blocklist": [
+    "perNationalIdNav",
+    "nationalIdNav"
+  ],
+  "safe_select_defaults": {
+    "User": "userId,username,firstName,lastName,email,status,department,division,location,title",
+    "EmpJob": "userId,startDate,seqNumber,company,department,division,location,position,jobCode,managerId,emplStatus,eventReason,countryOfCompany,endDate,employmentType,jobTitle",
+    "EmpCompensation": "userId,startDate,seqNumber,payGroup,payType,compaRatio,rangePenetration,endDate",
+    "EmpEmployment": "personIdExternal,userId,startDate,endDate,seniorityDate,originalStartDate",
+    "PerPersonal": "personIdExternal,startDate,firstName,lastName,middleName",
+    "PerEmail": "personIdExternal,emailType,emailAddress,isPrimary",
+    "PerPhone": "personIdExternal,phoneType,phoneNumber,isPrimary"
+  }
+}

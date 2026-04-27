@@ -335,21 +335,23 @@
 
   "WF": {
     "Workflows Tab": {
-      "entity": "FOWfConfigStepApprover",
+      "entity": "FOWfConfig",
+      "expand": "wfStepApproverNav",
+      "flatten_array_field": "wfStepApproverNav",
       "manual": false,
       "columns_map": {
         "Portlet / Object":              "",
         "Functional Scenario":           "",
         "Initiator":                     "",
-        "Workflow Step":                 "stepNum",
-        "Approver/CC Type":              "approverType",
-        "Approver/CC Role":              "approverRole",
-        "Relationship to Approver":      "relationshipToApprover",
-        "Context":                       "context",
-        "Edit Transaction Capability":   "actionType",
-        "Remind in Days":                "",
-        "Is Delegate Supported":         "",
-        "Alert Message":                 "emailConfiguration",
+        "Workflow Step":                 "wfStepApproverNav.stepNum",
+        "Approver/CC Type":              "wfStepApproverNav.approverType",
+        "Approver/CC Role":              "wfStepApproverNav.approverRole",
+        "Relationship to Approver":      "wfStepApproverNav.relationshipToApprover",
+        "Context":                       "wfStepApproverNav.context",
+        "Edit Transaction Capability":   "wfStepApproverNav.actionType",
+        "Remind in Days":                "remindIndays",
+        "Is Delegate Supported":         "isDelegateSupported",
+        "Alert Message":                 "wfStepApproverNav.emailConfiguration",
         "Business Rule Trigger":         "",
         "Workflow ID":                   "externalCode"
       }
@@ -401,7 +403,13 @@
       }
     },
     "Workflow Groups": {
-      "entity": null, "manual": true, "columns_map": {}
+      "entity": "DynamicGroup",
+      "filter": "groupType eq 'ectworkflow'",
+      "manual": false,
+      "columns_map": {
+        "Workflow Group":  "groupName",
+        "Member Assigned": ""
+      }
     },
     "Alert Messages": {
       "entity": "AlertMessage",

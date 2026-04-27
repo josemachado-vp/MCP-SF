@@ -14,6 +14,8 @@ from typing import Annotated, Optional
 import httpx
 from fastmcp import FastMCP
 
+from helpers.pii_filter import validate_query, scrub_response, get_safe_select
+
 from helpers.sf_client import SFClient
 from helpers.metadata_parser import parse_metadata_xml, extract_entity_names
 from helpers.credentials import resolve_api_host, get_bearer_token
@@ -191,6 +193,20 @@ async def query_odata(
     """
     api_host = resolve_api_host(data_center)
 
+    # --- PII pre-query validation ---
+    pii_check = validate_query(entity, select=select, filter_expr=filter, expand=expand)
+    if not pii_check.allowed:
+        return {
+            "entity": entity,
+            "error": pii_check.error_message,
+            "pii_blocked_fields": pii_check.blocked_fields,
+            "pii_tier": pii_check.tier,
+            "suggestion": (
+                f"Use $select with safe fields. "
+                f"Example: {get_safe_select(entity) or 'See entity metadata for available fields.'}"
+            ),
+        }
+
     params: dict[str, str] = {}
     if filter:
         params["$filter"] = filter
@@ -216,8 +232,20 @@ async def query_odata(
         )
 
     records = result.get("d", {}).get("results", [])
-    return {
+
+    # --- PII post-response scrubbing (second line of defense) ---
+    records, redacted = scrub_response(entity, records)
+
+    response: dict = {
         "entity": entity,
         "count": len(records),
         "data": records,
     }
+    if pii_check.warnings:
+        response["pii_warnings"] = pii_check.warnings
+    if redacted:
+        response["pii_redacted_fields"] = redacted
+        response["pii_notice"] = (
+            "Some fields were redacted per the Veritas Prime data classification policy."
+        )
+    return response

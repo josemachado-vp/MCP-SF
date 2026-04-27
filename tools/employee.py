@@ -19,6 +19,7 @@ from fastmcp import FastMCP
 from helpers.sf_client import SFClient
 from helpers.credentials import resolve_api_host, get_bearer_token
 from helpers.nl_query_parser import parse_nl_query, build_effective_date_filter
+from helpers.pii_filter import validate_entity_access, scrub_response, get_safe_select
 
 employee_mcp = FastMCP(name="SF Employee Tools")
 
@@ -71,6 +72,15 @@ async def search_employees(
     api_host = resolve_api_host(data_center)
     parsed = parse_nl_query(query, search_fields, include_inactive, min(max_results, 100))
 
+    # PII entity check
+    entity_check = validate_entity_access(parsed.entity)
+    if not entity_check.allowed:
+        return {
+            "query": query,
+            "error": entity_check.error_message,
+            "pii_tier": entity_check.tier,
+        }
+
     params: dict[str, str] = {"$format": "json", "$top": str(parsed.top)}
     if parsed.filters:
         params["$filter"] = " and ".join(parsed.filters)
@@ -83,7 +93,8 @@ async def search_employees(
         result = await _sf_query(sf, api_host, token, parsed.entity, params)
 
     records = result.get("d", {}).get("results", [])
-    return {
+    records, redacted = scrub_response(parsed.entity, records)
+    response = {
         "query": query,
         "interpretation": parsed.interpretation,
         "entity_queried": parsed.entity,
@@ -91,6 +102,9 @@ async def search_employees(
         "count": len(records),
         "data": records,
     }
+    if redacted:
+        response["pii_redacted_fields"] = redacted
+    return response
 
 
 @employee_mcp.tool
@@ -124,9 +138,21 @@ async def get_employee_profile(
 
         tasks = {}
 
+        # Entity-to-key mapping for scrubbing
+        _key_entity = {
+            "user": "User",
+            "job": "EmpJob",
+            "compensation": "EmpCompensation",
+            "employment": "EmpEmployment",
+            "personal": "PerPersonal",
+            "emails": "PerEmail",
+            "phones": "PerPhone",
+        }
+
         if "user" in requested:
             tasks["user"] = _sf_query(sf, api_host, token, "User", {
                 "$filter": f"userId eq '{user_id}'",
+                "$select": get_safe_select("User"),
                 "$top": "1",
             })
 
@@ -137,6 +163,7 @@ async def get_employee_profile(
                 job_filter += f" and {date_filter}"
             tasks["job"] = _sf_query(sf, api_host, token, "EmpJob", {
                 "$filter": job_filter,
+                "$select": get_safe_select("EmpJob"),
                 "$top": "1",
                 "$orderby": "startDate desc",
             })
@@ -148,6 +175,7 @@ async def get_employee_profile(
                 comp_filter += f" and {date_filter}"
             tasks["compensation"] = _sf_query(sf, api_host, token, "EmpCompensation", {
                 "$filter": comp_filter,
+                "$select": get_safe_select("EmpCompensation"),
                 "$top": "1",
                 "$orderby": "startDate desc",
             })
@@ -155,12 +183,14 @@ async def get_employee_profile(
         if "employment" in requested:
             tasks["employment"] = _sf_query(sf, api_host, token, "EmpEmployment", {
                 "$filter": f"userId eq '{user_id}'",
+                "$select": get_safe_select("EmpEmployment"),
                 "$top": "1",
             })
 
         if "personal" in requested:
             tasks["personal"] = _sf_query(sf, api_host, token, "PerPersonal", {
                 "$filter": f"personIdExternal eq '{user_id}'",
+                "$select": get_safe_select("PerPersonal"),
                 "$top": "1",
                 "$orderby": "startDate desc",
             })
@@ -168,27 +198,35 @@ async def get_employee_profile(
         if "emails" in requested:
             tasks["emails"] = _sf_query(sf, api_host, token, "PerEmail", {
                 "$filter": f"personIdExternal eq '{user_id}'",
+                "$select": get_safe_select("PerEmail"),
             })
 
         if "phones" in requested:
             tasks["phones"] = _sf_query(sf, api_host, token, "PerPhone", {
                 "$filter": f"personIdExternal eq '{user_id}'",
+                "$select": get_safe_select("PerPhone"),
             })
 
         # Execute all queries in parallel
         keys = list(tasks.keys())
         results = await asyncio.gather(*tasks.values(), return_exceptions=True)
 
+        all_redacted: list[str] = []
         for key, result in zip(keys, results):
             if isinstance(result, Exception):
                 profile[key] = {"error": str(result)}
             else:
                 records = result.get("d", {}).get("results", [])
+                records, redacted = scrub_response(_key_entity[key], records)
+                all_redacted.extend(redacted)
                 if key in ("emails", "phones"):
                     profile[key] = records
                 else:
                     profile[key] = records[0] if records else {}
             profile["sections"].append(key)
+
+        if all_redacted:
+            profile["pii_redacted_fields"] = sorted(set(all_redacted))
 
     return profile
 
@@ -356,6 +394,7 @@ async def get_employee_history(
 
     params: dict[str, str] = {
         "$filter": f"{filter_field} eq '{user_id}'",
+        "$select": get_safe_select(entity),
         "$top": str(min(limit, 50)),
         "$orderby": "startDate desc",
     }
@@ -366,13 +405,17 @@ async def get_employee_history(
         result = await _sf_query(sf, api_host, token, entity, params)
 
     records = result.get("d", {}).get("results", [])
-    return {
+    records, redacted = scrub_response(entity, records)
+    response = {
         "user_id": user_id,
         "history_type": history_type,
         "entity": entity,
         "count": len(records),
         "records": records,
     }
+    if redacted:
+        response["pii_redacted_fields"] = redacted
+    return response
 
 
 @employee_mcp.tool
@@ -424,11 +467,12 @@ async def compare_employees(
             user_data = (user_result.get("d", {}).get("results", []) or [{}])[0] if user_result.get("d", {}).get("results") else {}
             job_data = (job_result.get("d", {}).get("results", []) or [{}])[0] if job_result.get("d", {}).get("results") else {}
 
-            # Merge
+            # Merge and scrub PII
             merged = {"userId": uid}
             merged.update(user_data)
             merged.update(job_data)
-            return merged
+            scrubbed, _ = scrub_response("User", [merged])
+            return scrubbed[0] if scrubbed else merged
 
         profiles = await asyncio.gather(*[fetch_profile(uid) for uid in user_ids])
 

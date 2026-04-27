@@ -18,6 +18,7 @@ from fastmcp import FastMCP
 
 from helpers.sf_client import SFClient
 from helpers.credentials import resolve_api_host, get_bearer_token
+from helpers.pii_filter import annotate_template_fields, get_pii_warning_for_upsert
 from helpers.metadata_parser import parse_metadata_xml
 from helpers.template_parser import (
     parse_csv_template,
@@ -210,10 +211,20 @@ async def generate_import_template(
                 except Exception:
                     pass
 
+    # Annotate fields with PII tier info
+    field_names = [f["name"] for f in template_fields]
+    annotated = annotate_template_fields(entity_name, field_names)
+    for tf in template_fields:
+        ann = annotated.get(tf["name"], {})
+        if ann.get("pii_tier"):
+            tf["pii_tier"] = ann["pii_tier"]
+        if ann.get("pii_warning"):
+            tf["pii_warning"] = ann["pii_warning"]
+
     # Build CSV header line
     csv_headers = [f["name"] for f in template_fields]
 
-    return {
+    result = {
         "entity": entity_name,
         "csv_headers": ",".join(csv_headers),
         "fields": template_fields,
@@ -222,6 +233,13 @@ async def generate_import_template(
         "required_fields": [f["name"] for f in template_fields if f["required"]],
         "picklist_values": picklist_values,
     }
+    pii_fields = [f["name"] for f in template_fields if f.get("pii_tier")]
+    if pii_fields:
+        result["pii_notice"] = (
+            f"{len(pii_fields)} field(s) contain sensitive data per Veritas Prime policy. "
+            "See 'pii_tier' and 'pii_warning' in the fields list."
+        )
+    return result
 
 
 @data_import_mcp.tool
@@ -284,6 +302,11 @@ async def execute_upsert(
 
             for i, record in enumerate(records):
                 record_result = {"index": i, "key": "", "status": "", "message": "", "data": record}
+
+                # PII check
+                pii_warn = get_pii_warning_for_upsert(entity_name, record)
+                if pii_warn:
+                    record_result["pii_warning"] = pii_warn
 
                 # Check for key fields
                 missing_keys = [k for k in keys if k not in record]

@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Optional
 
 from helpers.odata_utils import escape_odata_string, validate_field_name
+from helpers.pii_filter import validate_entity_access
 
 
 @dataclass
@@ -250,6 +251,16 @@ def parse_nl_query(
     select = None
     if entity in entities_map:
         select = entities_map[entity].get("common_select")
+
+    # PII gate: block restricted entities before returning query
+    pii_check = validate_entity_access(entity)
+    if not pii_check.allowed:
+        return ParsedQuery(
+            entity=entity,
+            filters=[],
+            top=0,
+            interpretation=pii_check.reason or f"Entity '{entity}' is PII-restricted",
+        )
 
     filter_str = " and ".join(filters) if filters else None
 
