@@ -8,9 +8,10 @@ Gemini function-calling.
 from __future__ import annotations
 
 import inspect
+import types
 import typing
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Annotated, Any, Callable
 
 # --- Imports mirror main.py ---
 from tools.discovery import (
@@ -94,18 +95,26 @@ def _python_type_to_schema(annotation: Any) -> dict[str, Any]:
     origin = typing.get_origin(annotation)
     args = typing.get_args(annotation)
 
-    # Optional[X] / Union[X, None]
-    if origin is typing.Union:
-        non_none = [a for a in args if a is not type(None)]
+    # Annotated[T, metadata...] — unwrap to the underlying type
+    if origin is Annotated:
+        return _python_type_to_schema(args[0])
+
+    # Optional[X] / Union[X, None] — both typing.Union and PEP 604 X | Y
+    is_union = origin is typing.Union or (
+        isinstance(annotation, types.UnionType)
+    )
+    if is_union:
+        union_args = args if args else typing.get_args(annotation)
+        non_none = [a for a in union_args if a is not type(None)]
         if len(non_none) == 1:
             return _python_type_to_schema(non_none[0])
         return {"type": "string"}
 
-    if origin in (list, typing.List):
+    if origin is list:
         item_schema = _python_type_to_schema(args[0]) if args else {"type": "string"}
         return {"type": "array", "items": item_schema}
 
-    if origin in (dict, typing.Dict):
+    if origin is dict:
         return {"type": "object"}
 
     if annotation in _PRIMITIVE_MAP:
@@ -117,12 +126,30 @@ def _python_type_to_schema(annotation: Any) -> dict[str, Any]:
 
 def _build_schema(fn: Callable) -> dict[str, Any]:
     sig = inspect.signature(fn)
+    # Use get_type_hints with include_extras=True so that Annotated wrappers
+    # are preserved and `from __future__ import annotations` string annotations
+    # are properly resolved to their actual type objects.
+    try:
+        hints = typing.get_type_hints(fn, include_extras=True)
+    except Exception:
+        hints = {}
+
     properties: dict[str, Any] = {}
     required: list[str] = []
     for name, param in sig.parameters.items():
         if name in ("self", "cls"):
             continue
-        properties[name] = _python_type_to_schema(param.annotation)
+        annotation = hints.get(name, param.annotation)
+        prop = _python_type_to_schema(annotation)
+        # Extract the first string from Annotated metadata as the description
+        if typing.get_origin(annotation) is Annotated:
+            metadata = typing.get_args(annotation)[1:]
+            for item in metadata:
+                if isinstance(item, str) and item.strip():
+                    prop = dict(prop)  # copy before mutating
+                    prop["description"] = item
+                    break
+        properties[name] = prop
         if param.default is inspect._empty:
             required.append(name)
     schema: dict[str, Any] = {
