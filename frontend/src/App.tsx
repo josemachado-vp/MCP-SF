@@ -41,19 +41,21 @@ export default function App() {
     try {
       await streamChat(chatIdRef.current, text, (ev: ChatEvent) => {
         switch (ev.type) {
-          case "message_delta":
+          case "message_delta": {
             assistantBuffer += ev.text;
+            const snapshot = assistantBuffer;
             setMessages((m) => {
               const copy = [...m];
               const last = copy[copy.length - 1];
               if (last?.role === "assistant") {
-                copy[copy.length - 1] = { role: "assistant", text: assistantBuffer };
+                copy[copy.length - 1] = { role: "assistant", text: snapshot };
               } else {
-                copy.push({ role: "assistant", text: assistantBuffer });
+                copy.push({ role: "assistant", text: snapshot });
               }
               return copy;
             });
             break;
+          }
           case "tool_call_proposed":
             setPendingTool(ev.name);
             break;
