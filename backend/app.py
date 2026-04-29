@@ -16,11 +16,13 @@ from backend.routes.tools import router as tools_router
 from backend.tool_registry import get_registry
 
 
-def _default_agent_factory(_chat_id: str) -> GeminiAgent:
+def _default_agent_factory(chat_id: str) -> GeminiAgent:
     api_key = os.environ["GEMINI_API_KEY"]
     model = os.getenv("GEMINI_MODEL", "gemini-3-pro-preview")
     registry = get_registry()
-    client = build_default_client(api_key=api_key, model=model, tools=registry.tools)
+    client = build_default_client(
+        api_key=api_key, model=model, tools=registry.tools, chat_id=chat_id
+    )
     return GeminiAgent(client=client)
 
 
@@ -48,4 +50,4 @@ def create_app(agent_factory: Callable[[str], GeminiAgent] | None = None) -> Fas
 if __name__ == "__main__":
     import uvicorn
     port = int(os.getenv("FRONTEND_BACKEND_PORT", "8001"))
-    uvicorn.run("backend.app:create_app", host="127.0.0.1", port=port, reload=True, factory=True)
+    uvicorn.run("backend.app:create_app", host="127.0.0.1", port=port, reload=False, factory=True)

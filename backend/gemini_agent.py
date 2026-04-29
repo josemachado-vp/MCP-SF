@@ -154,29 +154,43 @@ class GeminiAgent:
         yield {"type": "final"}
 
 
-def build_default_client(api_key: str, model: str, tools: list[ToolMeta]) -> LLMClient:
+_genai_client_cache: dict[str, Any] = {}
+_chat_session_cache: dict[str, Any] = {}
+
+
+def build_default_client(
+    api_key: str, model: str, tools: list[ToolMeta], chat_id: str = "default"
+) -> LLMClient:
     """Construct a real Gemini client adapter.
 
-    Wraps `google.genai.Client` so its chat surface matches the duck-typed
-    `LLMClient` protocol used above. The exact SDK call shape may need
-    minor tweaks against the installed `google-genai` version.
+    The underlying ``genai.Client`` is cached at module level (one httpx
+    AsyncClient per process) and the chat session is cached per
+    ``chat_id`` so conversation history is preserved across turns and the
+    httpx client is not closed between requests.
     """
     from google import genai  # type: ignore
     from google.genai import types as gtypes  # type: ignore
 
-    function_declarations = [
-        gtypes.FunctionDeclaration(
-            name=t.name,
-            description=t.description,
-            parameters=t.parameters_schema,
+    client = _genai_client_cache.get(api_key)
+    if client is None:
+        client = genai.Client(api_key=api_key)
+        _genai_client_cache[api_key] = client
+
+    chat = _chat_session_cache.get(chat_id)
+    if chat is None:
+        function_declarations = [
+            gtypes.FunctionDeclaration(
+                name=t.name,
+                description=t.description,
+                parameters=t.parameters_schema,
+            )
+            for t in tools
+        ]
+        config = gtypes.GenerateContentConfig(
+            tools=[gtypes.Tool(function_declarations=function_declarations)],
         )
-        for t in tools
-    ]
-    config = gtypes.GenerateContentConfig(
-        tools=[gtypes.Tool(function_declarations=function_declarations)],
-    )
-    client = genai.Client(api_key=api_key)
-    chat = client.aio.chats.create(model=model, config=config)
+        chat = client.aio.chats.create(model=model, config=config)
+        _chat_session_cache[chat_id] = chat
 
     class _Adapter:
         async def send(self, payload: Any) -> list[Any]:
