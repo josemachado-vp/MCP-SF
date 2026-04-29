@@ -17,8 +17,8 @@ test_oauth.py
 gen_rule_doc.js
 gen_basic_import.py
 export_template.py
-package.json
-package-lock.json
+/package.json
+/package-lock.json
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/

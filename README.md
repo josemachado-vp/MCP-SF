@@ -287,3 +287,45 @@ Tests use `respx` to mock httpx calls — no live SF tenant needed.
 | Engineers | Jose Avengers (4 engineers, India) |
 
 For questions on tools, OIDC setup, or VPMC Sandbox access — ping the functional lead.
+
+## Web frontend (optional)
+
+A local web UI lets you chat with Gemini, which orchestrates the 52 MCP tools.
+
+### Install
+
+```bash
+uv sync --extra frontend
+cd frontend && npm install
+```
+
+### Configure
+
+Add to `.env`:
+
+```
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-3-pro-preview
+FRONTEND_BACKEND_PORT=8001
+FRONTEND_CORS_ORIGIN=http://localhost:5173
+```
+
+### Run
+
+In two terminals:
+
+```bash
+# 1. Backend (FastAPI + SSE)
+uv run python -m backend.app
+
+# 2. Frontend (Vite)
+cd frontend && npm run dev
+```
+
+Open the Vite URL printed in the second terminal.
+
+### Safety
+
+`execute_upsert` always pops a confirmation modal before running. Choose
+**Approve**, **Reject**, or **Force dry_run**. Direct sidebar execution of
+`execute_upsert` is forced to `dry_run=true`.
