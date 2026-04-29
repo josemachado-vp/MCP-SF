@@ -3,6 +3,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Chat, type ChatMessage } from "./components/Chat";
 import { ExecutionPanel } from "./components/ExecutionPanel";
 import { ApprovalModal } from "./components/ApprovalModal";
+import { ConnectionModal } from "./components/ConnectionModal";
 import { approveTool, listTools, streamChat } from "./lib/api";
 import type { ChatEvent, ToolCategory } from "./lib/types";
 
@@ -25,6 +26,7 @@ export default function App() {
   const [lastExec, setLastExec] = useState<Execution | null>(null);
   const [pendingTool, setPendingTool] = useState<string | null>(null);
   const [pendingApproval, setPendingApproval] = useState<PendingApproval | null>(null);
+  const [connectionOpen, setConnectionOpen] = useState(false);
   const chatIdRef = useRef<string>(crypto.randomUUID());
   const inputAppendRef = useRef<((s: string) => void) | null>(null);
 
@@ -35,27 +37,30 @@ export default function App() {
   }, []);
 
   const handleSend = async (text: string) => {
-    setMessages((m) => [...m, { role: "user", text }]);
+    // Append the user message AND a fresh empty assistant slot upfront,
+    // so message_delta events just need to append to the last (assistant)
+    // bubble. No external buffer, no closure timing bug.
+    setMessages((m) => [
+      ...m,
+      { role: "user", text },
+      { role: "assistant", text: "" },
+    ]);
     const ctrl = new AbortController();
-    let assistantBuffer = "";
     try {
       await streamChat(chatIdRef.current, text, (ev: ChatEvent) => {
         switch (ev.type) {
-          case "message_delta": {
-            assistantBuffer += ev.text;
-            const snapshot = assistantBuffer;
+          case "message_delta":
             setMessages((m) => {
               const copy = [...m];
-              const last = copy[copy.length - 1];
-              if (last?.role === "assistant") {
-                copy[copy.length - 1] = { role: "assistant", text: snapshot };
+              const i = copy.length - 1;
+              if (copy[i]?.role === "assistant") {
+                copy[i] = { role: "assistant", text: copy[i].text + ev.text };
               } else {
-                copy.push({ role: "assistant", text: snapshot });
+                copy.push({ role: "assistant", text: ev.text });
               }
               return copy;
             });
             break;
-          }
           case "tool_call_proposed":
             setPendingTool(ev.name);
             break;
@@ -68,17 +73,40 @@ export default function App() {
               name: ev.name, args: ev.args, result: ev.result,
               duration_ms: ev.duration_ms, dry_run_forced: ev.dry_run_forced,
             });
-            setMessages((m) => [...m, {
-              role: "tool",
-              text: `${ev.name} → ${JSON.stringify(ev.result).slice(0, 240)}…`,
-            }]);
+            setMessages((m) => [
+              ...m,
+              {
+                role: "tool",
+                text: `${ev.name} → ${JSON.stringify(ev.result).slice(0, 240)}…`,
+              },
+              { role: "assistant", text: "" },
+            ]);
             break;
           case "error":
-            setMessages((m) => [...m, { role: "assistant", text: `⚠ ${ev.message}` }]);
+            setMessages((m) => {
+              const copy = [...m];
+              const i = copy.length - 1;
+              const errText = `⚠ ${ev.message}`;
+              if (copy[i]?.role === "assistant" && copy[i].text === "") {
+                copy[i] = { role: "assistant", text: errText };
+              } else {
+                copy.push({ role: "assistant", text: errText });
+              }
+              return copy;
+            });
             break;
           case "final":
-            assistantBuffer = "";
             setPendingTool(null);
+            // Drop trailing empty assistant placeholder if Gemini sent
+            // no text (e.g. only tool calls).
+            setMessages((m) => {
+              const copy = [...m];
+              const i = copy.length - 1;
+              if (copy[i]?.role === "assistant" && copy[i].text === "") {
+                copy.pop();
+              }
+              return copy;
+            });
             break;
         }
       }, ctrl.signal);
@@ -99,6 +127,7 @@ export default function App() {
       <Sidebar
         categories={categories}
         onPickTool={(name) => inputAppendRef.current?.(`@${name} `)}
+        onOpenConnection={() => setConnectionOpen(true)}
       />
       <Chat messages={messages} pendingToolName={pendingTool} onSend={handleSend} />
       <ExecutionPanel last={lastExec} />
@@ -108,6 +137,9 @@ export default function App() {
           args={pendingApproval.args}
           onDecision={handleApprove}
         />
+      )}
+      {connectionOpen && (
+        <ConnectionModal onClose={() => setConnectionOpen(false)} />
       )}
     </div>
   );

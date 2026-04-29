@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from backend.gemini_agent import GeminiAgent, build_default_client
 from backend.routes import chat as chat_routes
+from backend.routes.config import router as config_router
 from backend.routes.health import router as health_router
 from backend.routes.tools import router as tools_router
 from backend.tool_registry import get_registry
@@ -38,6 +39,7 @@ def create_app(agent_factory: Callable[[str], GeminiAgent] | None = None) -> Fas
         allow_headers=["*"],
     )
     app.include_router(health_router)
+    app.include_router(config_router)
     app.include_router(tools_router)
     app.include_router(chat_routes.build_router(agent_factory or _default_agent_factory))
     return app

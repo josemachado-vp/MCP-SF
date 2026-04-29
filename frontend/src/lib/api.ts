@@ -3,9 +3,41 @@ import type { ApprovalDecision, ChatEvent, ToolCategory } from "./types";
 
 const BASE = import.meta.env.VITE_BACKEND_URL ?? "http://127.0.0.1:8001";
 
+export interface ConfigSnapshot {
+  sf: {
+    api_host: string;
+    company_id: string;
+    user_id: string;
+    password_masked: string;
+    ias_host: string;
+    oidc_client_id: string;
+    oidc_client_secret_masked: string;
+    ias_dependency_name: string;
+  };
+  gemini: { api_key_masked: string; model: string };
+}
+
 export async function listTools(): Promise<{ categories: ToolCategory[] }> {
   const r = await fetch(`${BASE}/api/tools`);
   if (!r.ok) throw new Error(`listTools failed: ${r.status}`);
+  return r.json();
+}
+
+export async function getConfig(): Promise<ConfigSnapshot> {
+  const r = await fetch(`${BASE}/api/config`);
+  if (!r.ok) throw new Error(`getConfig failed: ${r.status}`);
+  return r.json();
+}
+
+export async function reloadConfig(): Promise<ConfigSnapshot & { ok: boolean }> {
+  const r = await fetch(`${BASE}/api/config/reload`, { method: "POST" });
+  if (!r.ok) throw new Error(`reloadConfig failed: ${r.status}`);
+  return r.json();
+}
+
+export async function testGemini(): Promise<{ ok: boolean; model: string; reply?: string; error?: string }> {
+  const r = await fetch(`${BASE}/api/config/test-gemini`, { method: "POST" });
+  if (!r.ok) throw new Error(`testGemini failed: ${r.status}`);
   return r.json();
 }
 
@@ -36,9 +68,13 @@ export async function streamChat(
     onmessage(ev) {
       if (!ev.data) return;
       try {
-        onEvent(JSON.parse(ev.data) as ChatEvent);
-      } catch {
-        /* ignore malformed */
+        const parsed = JSON.parse(ev.data) as ChatEvent;
+        // eslint-disable-next-line no-console
+        console.debug("[SSE]", ev.event, parsed);
+        onEvent(parsed);
+      } catch (err) {
+        // eslint-disable-next-line no-console
+        console.warn("[SSE] malformed", ev.data, err);
       }
     },
     onerror(err) {

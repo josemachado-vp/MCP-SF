@@ -4,21 +4,31 @@ import type { ToolCategory } from "../lib/types";
 interface Props {
   categories: ToolCategory[];
   onPickTool: (name: string) => void;
+  onOpenConnection?: () => void;
 }
 
-export function Sidebar({ categories, onPickTool }: Props) {
+export function Sidebar({ categories, onPickTool, onOpenConnection }: Props) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const toggle = (name: string) =>
     setOpen((s) => ({ ...s, [name]: !s[name] }));
 
   return (
     <aside className="w-[280px] h-full bg-bg-soft border-r border-gray-200 flex flex-col">
-      <div className="p-4 border-b border-gray-200 flex items-center gap-3">
+      <div className="p-4 border-b border-gray-200 flex flex-col gap-3">
         <img
           src="/veritas-prime-logo.jpg"
           alt="Veritas Prime"
           className="h-9 w-auto"
         />
+        {onOpenConnection && (
+          <button
+            type="button"
+            onClick={onOpenConnection}
+            className="w-full text-xs px-3 py-2 bg-navy text-white rounded hover:bg-navy-dark"
+          >
+            Conectar con instancia
+          </button>
+        )}
       </div>
       <nav className="flex-1 overflow-y-auto py-2">
         {categories.map((cat) => (
