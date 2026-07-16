@@ -40,7 +40,7 @@ def build_router(agent_factory: Callable[[str], GeminiAgent]) -> APIRouter:
 
     @router.post("/{chat_id}/approve")
     async def approve(chat_id: str, body: ApprovalRequest) -> dict:
-        get_approval_registry().resolve(chat_id, body.call_id, body.decision)
-        return {"ok": True}
+        resolved = get_approval_registry().resolve(chat_id, body.call_id, body.decision)
+        return {"ok": True, "resolved": resolved}
 
     return router

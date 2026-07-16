@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import asyncio
 import inspect
+import os
 import time
 from typing import Any, AsyncIterator, Callable, Protocol
 
@@ -23,6 +24,21 @@ from backend.safety import (
     is_destructive,
 )
 from backend.tool_registry import ToolMeta, get_registry
+
+
+# Max seconds to wait for a human approval decision before failing safe (REJECT).
+_APPROVAL_TIMEOUT_S: float = float(os.getenv("APPROVAL_TIMEOUT_SECONDS", "600"))
+
+
+def _accepts_dry_run(fn: Callable) -> bool:
+    """True if ``fn`` accepts a ``dry_run`` keyword (or ``**kwargs``)."""
+    try:
+        params = inspect.signature(fn).parameters
+    except (TypeError, ValueError):
+        return True
+    if "dry_run" in params:
+        return True
+    return any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values())
 
 
 class LLMClient(Protocol):

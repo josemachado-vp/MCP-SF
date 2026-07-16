@@ -30,10 +30,19 @@ class ApprovalRegistry:
         self._pending[(chat_id, call_id)] = fut
         return fut
 
-    def resolve(self, chat_id: str, call_id: str, decision: ApprovalDecision) -> None:
+    def resolve(self, chat_id: str, call_id: str, decision: ApprovalDecision) -> bool:
+        """Resolve a pending approval. Returns True iff one was actually pending."""
         fut = self._pending.pop((chat_id, call_id), None)
         if fut is not None and not fut.done():
             fut.set_result(decision)
+            return True
+        return False
+
+    def cancel(self, chat_id: str, call_id: str) -> None:
+        """Drop a pending approval (timeout / client disconnect) so it can't leak."""
+        fut = self._pending.pop((chat_id, call_id), None)
+        if fut is not None and not fut.done():
+            fut.cancel()
 
 
 _registry: ApprovalRegistry | None = None
