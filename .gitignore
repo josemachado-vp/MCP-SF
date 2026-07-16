@@ -3,6 +3,9 @@ __pycache__/
 *.pyo
 .env
 .venv/
+
+# Local Claude Code settings (machine-specific paths + personal permissions)
+.claude/settings.local.json
 uv.lock
 dist/
 *.egg-info/
