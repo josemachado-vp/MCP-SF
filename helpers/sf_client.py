@@ -3,12 +3,27 @@ Shared async HTTP client for SAP SuccessFactors OData v2 API.
 
 Handles data center resolution and Bearer token auth (OIDC).
 Provides methods for metadata, OData queries, and picklist retrieval.
+
+Security boundaries enforced here (not in individual tools):
+  - Host allowlist: the Bearer token is only ever sent to a DATA_CENTERS
+    host, the configured SF_API_HOST, or a host listed in SF_ALLOWED_HOSTS.
+  - PII policy: every OData query is validated (helpers.pii_filter) before
+    execution and its JSON response is scrubbed recursively afterwards, so
+    no tool can bypass the PII layer by calling the client directly.
 """
 
 from __future__ import annotations
 
-import httpx
+import logging
+import os
 from typing import Optional
+from urllib.parse import urlsplit
+
+import httpx
+
+from helpers.pii_filter import scrub_payload, validate_entity_name, validate_query
+
+logger = logging.getLogger(__name__)
 
 
 # Data center mapping (from SAP KBA 2215682)
@@ -42,6 +57,83 @@ DATA_CENTERS: dict[str, str] = {
 }
 
 
+def _normalize_host(value: str) -> str:
+    """Return the lowercase hostname of a host or https URL ('' if unparseable)."""
+    value = value.strip()
+    if "://" not in value:
+        value = f"https://{value}"
+    try:
+        return (urlsplit(value).hostname or "").lower()
+    except ValueError:
+        return ""
+
+
+def allowed_hosts() -> set[str]:
+    """Hostnames the Bearer token may be sent to.
+
+    DATA_CENTERS hosts + SF_API_HOST + comma-separated SF_ALLOWED_HOSTS.
+    Read from the environment on each call so config reloads take effect.
+    """
+    hosts = {_normalize_host(url) for url in DATA_CENTERS.values()}
+    hosts.add(_normalize_host(os.environ.get("SF_API_HOST", "")))
+    for extra in os.environ.get("SF_ALLOWED_HOSTS", "").split(","):
+        hosts.add(_normalize_host(extra))
+    hosts.discard("")
+    return hosts
+
+
+def resolve_sf_base_url(data_center: str) -> str:
+    """Resolve a data center code, hostname or https URL to an allowed base URL.
+
+    Accepts a DATA_CENTERS key (e.g. 'DC4'), a bare hostname
+    (e.g. 'api8preview.sapsf.com') or an https URL. Anything that is not
+    https, carries a path/query/credentials/port, or whose host is not in
+    allowed_hosts() is rejected with ValueError.
+    """
+    dc_upper = data_center.strip().upper().replace(" ", "_")
+    if dc_upper in DATA_CENTERS:
+        return DATA_CENTERS[dc_upper]
+
+    raw = data_center.strip()
+    if "://" not in raw and "." in raw:
+        raw = f"https://{raw}"
+    if "://" not in raw:
+        raise ValueError(
+            f"Unknown data center '{data_center}'. "
+            f"Valid options: {', '.join(sorted(DATA_CENTERS.keys()))}, "
+            "the configured SF_API_HOST, or a host listed in SF_ALLOWED_HOSTS."
+        )
+
+    try:
+        parts = urlsplit(raw)
+        port = parts.port
+    except ValueError as exc:
+        raise ValueError(f"Invalid data center URL '{data_center}'.") from exc
+    host = (parts.hostname or "").lower()
+    if (
+        parts.scheme != "https"
+        or not host
+        or parts.username is not None
+        or parts.password is not None
+        or port is not None
+        or parts.path.strip("/")
+        or parts.query
+        or parts.fragment
+    ):
+        raise ValueError(
+            f"Invalid data center URL '{data_center}'. "
+            "Only https://<host> without path, port, query or credentials is accepted."
+        )
+    if host not in allowed_hosts():
+        logger.warning("Rejected data center host not in allowlist: %s", host)
+        raise ValueError(
+            f"Host '{host}' is not an allowed SuccessFactors API host. "
+            "Use a data center code, the configured SF_API_HOST, "
+            "or add the host to SF_ALLOWED_HOSTS."
+        )
+    return f"https://{host}"
+
+
 class SFClientError(Exception):
     """Raised when an SF API call fails."""
 
@@ -50,6 +142,14 @@ class SFClientError(Exception):
         self.message = message
         self.url = url
         super().__init__(f"SF API Error {status_code} for {url}: {message}")
+
+
+class PIIPolicyError(SFClientError):
+    """Raised, before any HTTP call, when a query violates the PII policy."""
+
+    def __init__(self, message: str, url: str, blocked_fields: list[str]):
+        self.blocked_fields = blocked_fields
+        super().__init__(403, message, url)
 
 
 class SFClient:
@@ -63,20 +163,11 @@ class SFClient:
         self._client = http_client
 
     def resolve_base_url(self, data_center: str) -> str:
-        """Resolve data center name to API base URL.
+        """Resolve data center name to an allowlisted API base URL.
 
-        Accepts a key from DATA_CENTERS (e.g. 'DC4') or a full URL.
+        See resolve_sf_base_url for the accepted forms.
         """
-        dc_upper = data_center.upper().replace(" ", "_")
-        if dc_upper in DATA_CENTERS:
-            return DATA_CENTERS[dc_upper]
-        if data_center.startswith("https://"):
-            return data_center.rstrip("/")
-        raise ValueError(
-            f"Unknown data center '{data_center}'. "
-            f"Valid options: {', '.join(sorted(DATA_CENTERS.keys()))} "
-            f"or a full URL like https://api4.successfactors.com"
-        )
+        return resolve_sf_base_url(data_center)
 
     def _bearer_headers(self, bearer_token: str) -> dict[str, str]:
         """Build Authorization headers for Bearer token auth."""
@@ -95,6 +186,7 @@ class SFClient:
         """
         base_url = self.resolve_base_url(data_center)
         if entity:
+            validate_entity_name(entity)
             url = f"{base_url}/odata/v2/{entity}/$metadata"
         else:
             url = f"{base_url}/odata/v2/$metadata"
@@ -117,7 +209,10 @@ class SFClient:
     ) -> dict:
         """Execute an OData query and return JSON.
 
-        Automatically appends $format=json.
+        Automatically appends $format=json. The query is validated against the
+        PII policy first (PIIPolicyError, no HTTP call, if blocked) and the
+        response is scrubbed recursively; names of removed fields, if any, are
+        returned under the top-level key "pii_redacted_fields".
         """
         base_url = self.resolve_base_url(data_center)
         url = f"{base_url}/odata/v2/{entity}"
@@ -125,6 +220,19 @@ class SFClient:
         query_params = {"$format": "json"}
         if params:
             query_params.update(params)
+
+        pii_check = validate_query(
+            entity,
+            select=query_params.get("$select"),
+            filter_expr=query_params.get("$filter"),
+            expand=query_params.get("$expand"),
+        )
+        if not pii_check.allowed:
+            raise PIIPolicyError(
+                pii_check.error_message or "Query blocked by PII policy.",
+                url,
+                pii_check.blocked_fields,
+            )
 
         response = await self._client.get(
             url,
@@ -134,7 +242,13 @@ class SFClient:
         )
         if response.status_code != 200:
             raise SFClientError(response.status_code, response.text[:500], url)
-        return response.json()
+
+        data = response.json()
+        redacted = scrub_payload(data)
+        if redacted:
+            logger.info("PII scrub removed fields from %s response: %s", entity, sorted(redacted))
+            data["pii_redacted_fields"] = sorted(redacted)
+        return data
 
     async def get_picklist(
         self,

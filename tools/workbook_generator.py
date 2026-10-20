@@ -222,7 +222,7 @@ async def generate_fo_workbook(
     sheets_skipped = 0
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         async def fetch_sheet(sheet_name: str):
@@ -313,7 +313,7 @@ async def generate_workflow_workbook(
     sheets_skipped = 0
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         async def fetch_wf_sheet(sheet_name: str):
@@ -434,7 +434,7 @@ async def generate_rules_workbook(
     warnings: list[str] = []
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         records = await _fetch_all_records(
             sf, api_host, token,

@@ -8,7 +8,7 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from backend.tool_registry import get_registry
+from backend.tool_registry import get_registry, strip_hidden_args
 
 router = APIRouter(prefix="/api/tools", tags=["tools"])
 
@@ -46,6 +46,7 @@ async def run_tool(req: ToolRunRequest) -> dict:
     tool = reg.by_name.get(req.name)
     if tool is None:
         raise HTTPException(status_code=404, detail=f"unknown tool: {req.name}")
+    req.args = strip_hidden_args(req.args)
     if tool.is_destructive:
         # Direct sidebar execution forces dry_run for safety.
         req.args["dry_run"] = True

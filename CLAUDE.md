@@ -80,7 +80,9 @@ OIDC 2-step flow via SAP IAS (Identity Authentication Service):
 1. **Step 1** — Password grant → `id_token`
 2. **Step 2** — `urn:ietf:params:oauth:grant-type:jwt-bearer` exchange with the `id_token` and `resource=urn:sap:identity:application:provider:name:{IAS_DEPENDENCY_NAME}` → SF `access_token`
 
-Tokens are **cached per-tenant** in `_token_cache` with a 60-second pre-expiry buffer for multi-tenant support. Tools accept `data_center`, `auth_user_id`, `auth_password` as per-request overrides on top of the `.env` defaults.
+Tokens are cached in `_token_cache` with a 60-second pre-expiry buffer, keyed by the **effective identity** `(ias_host, client_id, user_id, password fingerprint, api_host)` resolved *before* lookup, with a per-key `asyncio.Lock` + double-check so concurrent callers share one IAS round-trip. Tools accept `data_center`, `auth_user_id`, `auth_password` as per-request overrides on top of the `.env` defaults, and must pass `api_host=api_host` to `get_bearer_token`.
+
+`data_center` (and `resolve_api_host`) only accept DC codes, the configured `SF_API_HOST`, or hosts in the optional `SF_ALLOWED_HOSTS` env var (`helpers/sf_client.resolve_sf_base_url`); anything else raises `ValueError` before a token is sent. The web backend (`backend/tool_registry.HIDDEN_PARAMS`) hides host/credential overrides from Gemini and strips them from model-supplied args.
 
 Required env vars (all enforced — `ValueError` lists missing ones):
 `SF_API_HOST`, `SF_COMPANY_ID`, `SF_USER_ID`, `SF_PASSWORD`, `IAS_HOST`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`, `IAS_DEPENDENCY_NAME`.
@@ -93,7 +95,7 @@ Pluggable credential storage abstraction:
 
 ### SF Client (`helpers/sf_client.py`)
 
-Async HTTP client wrapping `httpx.AsyncClient`. Handles data center resolution (DC codes like `DC4`, `DC8_PREVIEW`, or full URLs), Bearer token auth via `get_bearer_token()`, and provides `get_metadata` (XML), `query_odata` (JSON), `get_picklist`, `post_odata`, `put_odata`, `upsert_odata`. Default timeout 60 s (90 s for full `$metadata`).
+Async HTTP client wrapping `httpx.AsyncClient`. Handles data center resolution (DC codes like `DC4`, `DC8_PREVIEW`, or allowlisted hosts/URLs), Bearer token auth via `get_bearer_token()`, and provides `get_metadata` (XML), `query_odata` (JSON), `get_picklist`, `post_odata`, `put_odata`, `upsert_odata`. Default timeout 60 s (90 s for full `$metadata`).
 
 ### NL Query Parser (`helpers/nl_query_parser.py`)
 
@@ -109,7 +111,7 @@ Parses OData EDMX/CSDL XML into structured dicts. Extracts entity types, propert
 
 ### PII Filter (`helpers/pii_filter.py`)
 
-Redaction layer applied to tool outputs. Field-level classification driven by `knowledge/pii_classification.json` — flags employee data fields (SSN, address, salary, DOB, etc.) and replaces them with redacted markers when redaction is requested. Tested in `tests/test_pii_filter.py`.
+PII validation + redaction driven by `knowledge/pii_classification.json`. **Enforced centrally in `SFClient.query_odata`**: every query runs `validate_query` first (raises `PIIPolicyError`, no HTTP call, when blocked) and the JSON response goes through the recursive `scrub_payload` (nested dicts, expanded navigations, `results` lists); removed field names come back under the top-level `pii_redacted_fields` key. Every `/` segment of `$select`/`$expand` is checked, `$filter` identifiers are matched exactly (string literals ignored), and entity names must match `^[A-Za-z_][A-Za-z0-9_]*$`. Tools must go through `SFClient` — never call `httpx` directly for OData. Tested in `tests/test_pii_filter.py` and `tests/test_sf_client.py`.
 
 ### OData Utils (`helpers/odata_utils.py`)
 

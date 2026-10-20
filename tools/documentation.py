@@ -61,7 +61,7 @@ async def generate_functional_spec(
     es = language == "es"
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch metadata
@@ -208,7 +208,7 @@ async def generate_cutover_checklist(
     if (include_picklists or include_rules) and data_center:
         api_host = resolve_api_host(data_center)
         async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-            token = await get_bearer_token(http, auth_user_id, auth_password)
+            token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
             sf = SFClient(http)
 
             if include_rules:
@@ -316,7 +316,7 @@ async def generate_data_dictionary(
     dictionary_rows = []
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         for entity_name in entities:

@@ -88,12 +88,13 @@ async def search_employees(
         params["$select"] = parsed.select
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, parsed.entity, params)
 
     records = result.get("d", {}).get("results", [])
     records, redacted = scrub_response(parsed.entity, records)
+    redacted = sorted(set(redacted) | set(result.get("pii_redacted_fields", [])))
     response = {
         "query": query,
         "interpretation": parsed.interpretation,
@@ -133,7 +134,7 @@ async def get_employee_profile(
     profile: dict = {"user_id": user_id, "as_of_date": effective_date, "sections": []}
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         tasks = {}
@@ -251,7 +252,7 @@ async def get_org_chart(
     today = date.today().isoformat()
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         async def get_employee_info(uid: str) -> dict:
@@ -400,7 +401,7 @@ async def get_employee_history(
     }
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, entity, params)
 
@@ -442,7 +443,7 @@ async def compare_employees(
     today = date.today().isoformat()
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         async def fetch_profile(uid: str) -> dict:

@@ -23,7 +23,7 @@ from backend.safety import (
     get_approval_registry,
     is_destructive,
 )
-from backend.tool_registry import ToolMeta, get_registry
+from backend.tool_registry import ToolMeta, get_registry, strip_hidden_args
 
 
 # Max seconds to wait for a human approval decision before failing safe (REJECT).
@@ -102,7 +102,7 @@ class GeminiAgent:
                     had_function_call = True
                     call = item["function_call"]
                     name = call.name
-                    args = dict(call.args)
+                    args = strip_hidden_args(dict(call.args))
                     call_id = getattr(call, "id", name)
 
                     yield {

@@ -65,7 +65,7 @@ async def validate_import_template(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(
             data_center=api_host,
@@ -137,7 +137,7 @@ async def generate_import_template(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(
             data_center=api_host,
@@ -189,7 +189,7 @@ async def generate_import_template(
     picklist_values = {}
     if include_picklist_values and picklist_fields:
         async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-            token = await get_bearer_token(http, auth_user_id, auth_password)
+            token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
             sf = SFClient(http)
             for pl_field in picklist_fields[:10]:  # Limit to 10 picklists
                 try:
@@ -280,7 +280,7 @@ async def execute_upsert(
         return result
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         if dry_run:

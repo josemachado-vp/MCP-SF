@@ -29,11 +29,14 @@ async def _get_client_and_token(
     data_center: str,
     user_id: Optional[str],
     password: Optional[str],
-    tenant_id: str,
 ) -> tuple[SFClient, str, str]:
-    """Resolve host and get token for an instance."""
+    """Resolve host and get token for an instance.
+
+    The token cache is keyed by the effective (user, host) identity, so
+    instances A and B never share a token unless they truly are the same.
+    """
     api_host = resolve_api_host(data_center)
-    token = await get_bearer_token(http, user_id, password, tenant_id=tenant_id)
+    token = await get_bearer_token(http, user_id, password, api_host=api_host)
     return SFClient(http), token, api_host
 
 
@@ -60,8 +63,8 @@ async def compare_instance_config(
     Essential for cutover validation (DEV → QA → PROD).
     """
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password, "instance_a")
-        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password, "instance_b")
+        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password)
+        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password)
 
         xml_a, xml_b = await asyncio.gather(
             sf_a.get_metadata(data_center=host_a, bearer_token=token_a, entity=entity),
@@ -132,8 +135,8 @@ async def compare_picklists(
     picklist consistency during migrations.
     """
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password, "instance_a")
-        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password, "instance_b")
+        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password)
+        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password)
 
         result_a, result_b = await asyncio.gather(
             sf_a.get_picklist(data_center=host_a, bearer_token=token_a, picklist_id=picklist_id),
@@ -201,8 +204,8 @@ async def compare_business_rules(
     Essential for cutover validation.
     """
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password, "instance_a")
-        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password, "instance_b")
+        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password)
+        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password)
 
         params: dict[str, str] = {"$top": "500"}
         if rule_name:
@@ -270,8 +273,8 @@ async def compare_foundation_objects(
     entity = fo_map.get(fo_type.lower().replace(" ", "_"), fo_type)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password, "instance_a")
-        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password, "instance_b")
+        sf_a, token_a, host_a = await _get_client_and_token(http, instance_a_dc, instance_a_user, instance_a_password)
+        sf_b, token_b, host_b = await _get_client_and_token(http, instance_b_dc, instance_b_user, instance_b_password)
 
         params: dict[str, str] = {"$top": "1000"}
 

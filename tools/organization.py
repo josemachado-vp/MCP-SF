@@ -98,7 +98,7 @@ async def get_org_structure(
         params["$filter"] = " and ".join(filters)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, entity, params)
 
@@ -177,7 +177,7 @@ async def get_position_details(
         params["$filter"] = " and ".join(filters)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, "Position", params)
 
@@ -233,7 +233,7 @@ async def list_foundation_objects(
         params["$select"] = select
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, entity, params)
 

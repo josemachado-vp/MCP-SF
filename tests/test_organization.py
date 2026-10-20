@@ -160,3 +160,45 @@ class TestListFoundationObjects:
             result = await list_foundation_objects(fo_type="FOJobCode")
 
         assert result["entity"] == "FOJobCode"
+
+
+class TestCentralPIIEnforcement:
+    """organization.py has no PII code of its own; SFClient must enforce it."""
+
+    @respx.mock
+    @pytest.mark.asyncio
+    async def test_pii_select_blocked_before_request(self):
+        respx.post("https://test.accounts.ondemand.com/oauth2/token").mock(
+            side_effect=[
+                httpx.Response(200, json=MOCK_TOKEN_RESPONSE_1),
+                httpx.Response(200, json=MOCK_TOKEN_RESPONSE_2),
+            ]
+        )
+        odata = respx.get(url__regex=r".*/odata/v2/FOJobCode.*")
+
+        from helpers.sf_client import PIIPolicyError
+
+        with patch.dict("os.environ", {**ENV_VARS, "PII_STRICT_MODE": "true"}):
+            with pytest.raises(PIIPolicyError):
+                await list_foundation_objects(fo_type="FOJobCode", select="externalCode,ssn")
+        assert not odata.called
+
+    @respx.mock
+    @pytest.mark.asyncio
+    async def test_pii_in_response_scrubbed(self):
+        respx.post("https://test.accounts.ondemand.com/oauth2/token").mock(
+            side_effect=[
+                httpx.Response(200, json=MOCK_TOKEN_RESPONSE_1),
+                httpx.Response(200, json=MOCK_TOKEN_RESPONSE_2),
+            ]
+        )
+        respx.get(url__regex=r".*/odata/v2/FOJobCode.*").mock(
+            return_value=httpx.Response(200, json=_mock_odata_response([
+                {"externalCode": "J1", "ownerNav": {"name": "Ana", "homeAddress": "Calle 1"}},
+            ]))
+        )
+
+        with patch.dict("os.environ", ENV_VARS):
+            result = await list_foundation_objects(fo_type="FOJobCode")
+
+        assert result["data"] == [{"externalCode": "J1", "ownerNav": {"name": "Ana"}}]

@@ -56,7 +56,7 @@ async def get_mdf_object_definition(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(data_center=api_host, bearer_token=token, entity=object_name)
 
@@ -135,7 +135,7 @@ async def generate_mdf_import_template(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(data_center=api_host, bearer_token=token, entity=object_name)
 
@@ -206,7 +206,7 @@ async def list_mdf_objects(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(data_center=api_host, bearer_token=token, entity=None)
 

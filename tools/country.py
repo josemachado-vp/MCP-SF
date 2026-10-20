@@ -98,7 +98,7 @@ async def get_country_specific_fields(
         api_host = resolve_api_host(data_center)
 
         async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-            token = await get_bearer_token(http, auth_user_id, auth_password)
+            token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
             sf = SFClient(http)
             try:
                 xml_text = await sf.get_metadata(data_center=api_host, bearer_token=token, entity=config["entity"])
@@ -145,7 +145,7 @@ async def validate_country_compliance(
     field_names = [f["field"] for f in required_fields]
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         if user_ids:

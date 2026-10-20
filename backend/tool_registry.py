@@ -82,6 +82,27 @@ CATEGORIES: dict[str, list[Callable]] = {
 
 DESTRUCTIVE_TOOL_NAMES: set[str] = {"execute_upsert"}
 
+# Per-request host/credential overrides are never exposed to the LLM: a
+# prompt-injected model must not be able to redirect the Bearer token or
+# authenticate as another user. Tools fall back to the .env defaults.
+# instance_a_dc / instance_b_dc stay visible because they are required for
+# instance comparison; they are constrained by the host allowlist in
+# helpers.sf_client.resolve_sf_base_url.
+HIDDEN_PARAMS: frozenset[str] = frozenset({
+    "data_center",
+    "auth_user_id",
+    "auth_password",
+    "instance_a_user",
+    "instance_a_password",
+    "instance_b_user",
+    "instance_b_password",
+})
+
+
+def strip_hidden_args(args: dict[str, Any]) -> dict[str, Any]:
+    """Drop any HIDDEN_PARAMS a caller (e.g. the model) supplied anyway."""
+    return {k: v for k, v in args.items() if k not in HIDDEN_PARAMS}
+
 
 _PRIMITIVE_MAP = {
     str: "string", int: "integer", float: "number", bool: "boolean",
@@ -137,7 +158,7 @@ def _build_schema(fn: Callable) -> dict[str, Any]:
     properties: dict[str, Any] = {}
     required: list[str] = []
     for name, param in sig.parameters.items():
-        if name in ("self", "cls"):
+        if name in ("self", "cls") or name in HIDDEN_PARAMS:
             continue
         annotation = hints.get(name, param.annotation)
         prop = _python_type_to_schema(annotation)

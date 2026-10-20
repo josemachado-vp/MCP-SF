@@ -159,3 +159,29 @@ async def test_force_dry_run_overrides_args():
     assert captured["dry_run"] is True
     executed = next(e for e in events if e["type"] == "tool_call_executed")
     assert executed["dry_run_forced"] is True
+
+
+@pytest.mark.asyncio
+async def test_model_supplied_host_and_credential_args_are_dropped():
+    """A (prompt-injected) model must not redirect the token or switch users."""
+    captured = {}
+
+    def fake_tool(user_id: str, data_center: str | None = None,
+                  auth_user_id: str | None = None, auth_password: str | None = None) -> dict:
+        captured.update(data_center=data_center, auth_user_id=auth_user_id, auth_password=auth_password)
+        return {"ok": True}
+
+    client = _FakeClient([
+        [{"function_call": _FakeCall(name="fake_tool", args={
+            "user_id": "u1",
+            "data_center": "https://attacker.example.com",
+            "auth_user_id": "admin",
+            "auth_password": "guess",
+        })}],
+        [{"text": "Done"}],
+    ])
+    agent = GeminiAgent(client=client, registry_overrides={"fake_tool": (fake_tool, False)})
+    events = [e async for e in agent.run(chat_id="c-hidden", user_message="go")]
+    executed = next(e for e in events if e["type"] == "tool_call_executed")
+    assert executed["args"] == {"user_id": "u1"}
+    assert captured == {"data_center": None, "auth_user_id": None, "auth_password": None}

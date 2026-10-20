@@ -70,7 +70,7 @@ async def audit_employee_data(
     findings = []
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch data in parallel
@@ -292,7 +292,7 @@ async def find_data_anomalies(
     today = date.today().isoformat()
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         if anomaly_type == "empty":
@@ -448,7 +448,7 @@ async def trace_rule_execution(
     safe_user_id = escape_odata_string(user_id)
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch employee's current data
@@ -518,7 +518,7 @@ async def check_permission_access(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         rbp_task = _sf_query(sf, api_host, token, "RBPRole", {
@@ -564,7 +564,7 @@ async def validate_effective_dating(
     filter_field = "personIdExternal" if entity.startswith("Per") else "userId"
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # If no user_ids specified, get a sample of active employees

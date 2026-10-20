@@ -326,3 +326,82 @@ class TestUpsertPIIWarning:
         warning = get_pii_warning_for_upsert("User", record)
         assert warning is not None
         assert "ssn_local" in warning
+
+
+# ---------------------------------------------------------------------------
+# P1 hardening: path segments, recursion, entity-name validation
+# ---------------------------------------------------------------------------
+
+from helpers.pii_filter import scrub_payload, validate_entity_name
+
+
+class TestPathSegmentChecks:
+    def test_select_nav_path_with_blocked_leaf(self):
+        result = validate_query("EmpJob", select="userId,personNav/nationalId")
+        assert not result.allowed
+        assert "nationalId" in result.blocked_fields
+
+    def test_select_through_blocked_navigation(self):
+        result = validate_query("User", select="perNationalIdNav/countryCode")
+        assert not result.allowed
+
+    def test_multi_level_expand_blocked_segment(self):
+        result = validate_query("EmpJob", expand="userNav,userNav/personNav/perNationalIdNav")
+        assert not result.allowed
+        assert "pernationalidnav" in result.blocked_fields
+
+    def test_multi_level_expand_safe(self):
+        assert validate_query("EmpJob", expand="userNav/personNav").allowed
+
+    def test_filter_on_nav_path_blocked(self):
+        result = validate_query("EmpJob", filter_expr="personNav/ssn eq '1'")
+        assert not result.allowed
+
+    def test_filter_literal_value_is_not_a_field(self):
+        # 'pin' / 'iban' as *values* must not trip the field blocklist
+        assert validate_query("User", filter_expr="userId eq 'pin' or city eq 'iban'").allowed
+
+    def test_filter_substring_of_field_not_false_positive(self):
+        # 'shipping' contains 'pin' but is a different identifier
+        assert validate_query("User", filter_expr="shippingMethod eq 'x'").allowed
+
+
+class TestEntityNameValidation:
+    @pytest.mark.parametrize("name", ["User", "EmpJob", "_Custom1", "cust_Object"])
+    def test_valid(self, name):
+        assert validate_entity_name(name) == name
+
+    @pytest.mark.parametrize("name", [
+        "User('admin')", "User/empInfo", "1User", "User?$select=ssn", "", "Emp Job", "../PerNationalId",
+    ])
+    def test_invalid(self, name):
+        with pytest.raises(ValueError):
+            validate_entity_name(name)
+        assert not validate_query(name).allowed
+
+
+class TestRecursiveScrub:
+    def test_nested_dicts_and_results_lists(self):
+        payload = {
+            "d": {"results": [{
+                "userId": "u1",
+                "ssnLast4": "6789",
+                "personNav": {
+                    "firstName": "Ana",
+                    "nationalId": "X",
+                    "emails": {"results": [{"emailAddress": "a@x", "creditCardNumber": "4111"}]},
+                },
+                "tags": [["nested", {"passport_no": "P1"}]],
+            }]},
+        }
+        redacted = scrub_payload(payload)
+        rec = payload["d"]["results"][0]
+        assert redacted == {"ssnLast4", "nationalId", "creditCardNumber", "passport_no"}
+        assert rec["personNav"] == {"firstName": "Ana", "emails": {"results": [{"emailAddress": "a@x"}]}}
+        assert rec["tags"] == [["nested", {}]]
+
+    def test_scrub_response_recurses(self):
+        records = [{"userId": "u1", "userNav": {"homeAddress": "x", "title": "Dev"}}]
+        scrubbed, redacted = scrub_response("EmpJob", records)
+        assert scrubbed == [{"userId": "u1", "userNav": {"title": "Dev"}}]
+        assert redacted == ["homeAddress"]

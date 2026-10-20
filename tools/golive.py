@@ -83,7 +83,7 @@ async def run_go_live_checks(
     results = []
 
     async with httpx.AsyncClient(timeout=180.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch common datasets once
@@ -249,7 +249,7 @@ async def generate_reconciliation_report(
     report_lines = []
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         for entity in entities:

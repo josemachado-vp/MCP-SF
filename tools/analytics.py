@@ -108,7 +108,7 @@ async def get_headcount(
         params["$filter"] = base_filter
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         records = await _fetch_all_pages(sf, api_host, token, "EmpJob", params)
 
@@ -158,7 +158,7 @@ async def get_compensation_analytics(
     today = date.today().isoformat()
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch compensation data
@@ -294,7 +294,7 @@ async def simulate_rule_impact(
     }
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         entity = rule_spec.get("base_object_entity", "EmpJob")

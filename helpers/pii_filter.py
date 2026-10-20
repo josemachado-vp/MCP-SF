@@ -14,6 +14,7 @@ from __future__ import annotations
 import fnmatch
 import json
 import os
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
@@ -94,6 +95,49 @@ def _is_blocked_field(field_name: str) -> bool:
     return field_name.lower() in _get_all_blocked_fields() or _field_matches_pattern(field_name)
 
 
+def _get_expand_blocklist() -> set[str]:
+    """Navigation properties that lead to HIGHLY_CONFIDENTIAL entities."""
+    return {e.lower() for e in _load_config().get("expand_blocklist", [])}
+
+
+def _path_segments(expr: Optional[str]) -> list[str]:
+    """Split a comma-separated $select/$expand into every '/' path segment."""
+    if not expr:
+        return []
+    return [
+        seg.strip()
+        for part in expr.split(",")
+        for seg in part.split("/")
+        if seg.strip()
+    ]
+
+
+_STRING_LITERAL_RE = re.compile(r"'(?:[^']|'')*'")
+_IDENTIFIER_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
+
+def _filter_identifiers(filter_expr: str) -> list[str]:
+    """Identifiers referenced in a $filter, ignoring quoted string literals."""
+    return _IDENTIFIER_RE.findall(_STRING_LITERAL_RE.sub("''", filter_expr))
+
+
+_ENTITY_NAME_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+
+
+def validate_entity_name(entity: str) -> str:
+    """Return entity if it is a plain OData entity set name, else raise ValueError.
+
+    Rejects key predicates, sub-paths and anything else that could smuggle
+    a different resource into the request URL (e.g. "User('x')/empInfo").
+    """
+    if not isinstance(entity, str) or not _ENTITY_NAME_RE.match(entity):
+        raise ValueError(
+            f"Invalid OData entity name: {entity!r}. "
+            "Must match ^[A-Za-z_][A-Za-z0-9_]*$."
+        )
+    return entity
+
+
 def _classify_field(field_name: str) -> Optional[str]:
     """Return the PII tier for a field, or None if not classified."""
     if _is_blocked_field(field_name):
@@ -146,11 +190,13 @@ def validate_select_fields(entity: str, select: Optional[str]) -> PIICheckResult
     if not select:
         return PIICheckResult(allowed=True)
 
-    fields = [f.strip() for f in select.split(",") if f.strip()]
+    # Every '/' segment counts: "personNav/nationalId" must not slip through.
+    fields = _path_segments(select)
+    expand_blocklist = _get_expand_blocklist()
     blocked: list[str] = []
 
     for f in fields:
-        if _is_blocked_field(f):
+        if _is_blocked_field(f) or f.lower() in expand_blocklist:
             blocked.append(f)
 
     if blocked:
@@ -195,6 +241,12 @@ def validate_query(
 
     This is the main entry point for pre-query checks.
     """
+    # 0. Entity must be a plain entity set name (no key predicates / paths)
+    try:
+        validate_entity_name(entity)
+    except ValueError as exc:
+        return PIICheckResult(allowed=False, error_message=str(exc))
+
     # 1. Check entity
     entity_check = validate_entity_access(entity)
     if not entity_check.allowed:
@@ -209,11 +261,13 @@ def validate_query(
     all_warnings.extend(select_check.warnings)
 
     # 3. Check $expand for blocked navigation properties
+    #    Every '/' segment of a multi-level expand is checked.
     if expand:
-        config = _load_config()
-        expand_blocklist = [e.lower() for e in config.get("expand_blocklist", [])]
-        expand_parts = [e.strip().lower() for e in expand.split(",")]
-        blocked_expands = [e for e in expand_parts if e in expand_blocklist]
+        expand_blocklist = _get_expand_blocklist()
+        blocked_expands = [
+            seg.lower() for seg in _path_segments(expand)
+            if seg.lower() in expand_blocklist or _is_blocked_field(seg)
+        ]
 
         if blocked_expands:
             if _is_strict_mode():
@@ -232,11 +286,13 @@ def validate_query(
                 )
 
     # 4. Check $filter for references to blocked fields
+    #    Identifiers are matched exactly (string literals ignored), so a
+    #    value like 'pin' or a field like 'shipping' is not a false positive.
     if filter_expr:
-        blocked_in_filter = []
-        for blocked_field in _get_all_blocked_fields():
-            if blocked_field in filter_expr.lower():
-                blocked_in_filter.append(blocked_field)
+        blocked_in_filter = sorted({
+            ident.lower() for ident in _filter_identifiers(filter_expr)
+            if _is_blocked_field(ident)
+        })
 
         if blocked_in_filter:
             if _is_strict_mode():
@@ -276,19 +332,35 @@ def scrub_response(
         return records, []
 
     redacted: set[str] = set()
-    blocked = _get_all_blocked_fields()
-
     for record in records:
-        keys_to_remove = []
-        for key in record:
-            if key.lower() in blocked or _field_matches_pattern(key):
-                keys_to_remove.append(key)
-
-        for key in keys_to_remove:
-            del record[key]
-            redacted.add(key)
+        redacted |= scrub_payload(record)
 
     return records, sorted(redacted)
+
+
+def scrub_payload(payload: object) -> set[str]:
+    """Recursively remove PII keys from an OData JSON payload, in place.
+
+    Walks nested dicts (expanded navigations) and lists (including OData v2
+    "results" arrays) at any depth. Removes HIGHLY_CONFIDENTIAL fields,
+    pattern-blocklisted fields and blocked navigation properties.
+    Returns the set of removed key names.
+    """
+    redacted: set[str] = set()
+    expand_blocklist = _get_expand_blocklist()
+    stack: list[object] = [payload]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, dict):
+            for key in list(node.keys()):
+                if _is_blocked_field(key) or key.lower() in expand_blocklist:
+                    del node[key]
+                    redacted.add(key)
+                elif isinstance(node[key], (dict, list)):
+                    stack.append(node[key])
+        elif isinstance(node, list):
+            stack.extend(item for item in node if isinstance(item, (dict, list)))
+    return redacted
 
 
 def check_indirect_pii_combination(fields: list[str]) -> PIICheckResult:

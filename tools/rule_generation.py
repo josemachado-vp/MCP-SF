@@ -86,7 +86,7 @@ async def validate_rule_fields(
     entities_needed = {f.get("entity", "") for f in fields_to_validate if f.get("entity")}
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # Fetch metadata for each unique entity
@@ -226,7 +226,7 @@ async def generate_rule_spec(
     # Fetch entity metadata
     entity_meta: dict = {}
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         try:
             xml_text = await sf.get_metadata(

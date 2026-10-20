@@ -81,3 +81,28 @@ def test_annotated_metadata_becomes_description():
     props = upsert.parameters_schema["properties"]
     desc = props["dry_run"].get("description")
     assert isinstance(desc, str) and desc.strip(), f"dry_run.description was {desc!r}"
+
+
+# --- P1: host/credential overrides are hidden from the model ---------------
+
+from backend.tool_registry import HIDDEN_PARAMS, strip_hidden_args
+
+
+def test_no_tool_schema_exposes_hidden_params():
+    registry = get_registry()
+    for tool in registry.tools:
+        props = tool.parameters_schema["properties"]
+        leaked = HIDDEN_PARAMS & set(props)
+        assert not leaked, f"{tool.name} exposes {leaked}"
+        assert not HIDDEN_PARAMS & set(tool.parameters_schema.get("required", []))
+
+
+def test_instance_compare_keeps_required_host_params_only():
+    props = get_registry().by_name["compare_picklists"].parameters_schema["properties"]
+    assert {"instance_a_dc", "instance_b_dc"} <= set(props)
+    assert not any(k.endswith(("_user", "_password")) for k in props)
+
+
+def test_strip_hidden_args():
+    args = {"user_id": "u1", "data_center": "https://evil", "auth_password": "x", "instance_a_user": "y"}
+    assert strip_hidden_args(args) == {"user_id": "u1"}

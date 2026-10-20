@@ -71,7 +71,7 @@ async def list_business_rules(
         params["$filter"] = " and ".join(filters)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await _sf_query(sf, api_host, token, "RuleHeaderBean", params)
 
@@ -108,7 +108,7 @@ async def get_permission_roles(
     results: dict = {"role_type_queried": role_type}
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         tasks = {}

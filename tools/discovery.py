@@ -43,7 +43,7 @@ async def get_entity_metadata(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(
             data_center=api_host,
@@ -96,7 +96,7 @@ async def list_entities(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(
             data_center=api_host,
@@ -139,7 +139,7 @@ async def get_picklist_values(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await sf.get_picklist(
             data_center=api_host,
@@ -222,7 +222,7 @@ async def query_odata(
         params["$orderby"] = orderby
 
     async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         result = await sf.query_odata(
             data_center=api_host,
@@ -234,7 +234,9 @@ async def query_odata(
     records = result.get("d", {}).get("results", [])
 
     # --- PII post-response scrubbing (second line of defense) ---
+    # SFClient.query_odata already scrubbed centrally; merge what it removed.
     records, redacted = scrub_response(entity, records)
+    redacted = sorted(set(redacted) | set(result.get("pii_redacted_fields", [])))
 
     response: dict = {
         "entity": entity,

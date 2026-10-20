@@ -55,6 +55,8 @@ The server reads credentials from `.env` at the project root. Every variable bel
 | `OIDC_CLIENT_ID` | ✅ | OIDC Client ID registered in IAS | *(ask team lead)* |
 | `OIDC_CLIENT_SECRET` | ✅ | OIDC Client Secret from IAS | *(ask team lead)* |
 | `IAS_DEPENDENCY_NAME` | ✅ | SF dependency name configured in IAS | `SF_DEPENDENCY` |
+| `SF_ALLOWED_HOSTS` | — | Optional comma-separated extra API hosts accepted as `data_center` overrides (e.g. QA/PROD tenants for instance comparison) | *(empty)* |
+| `PII_STRICT_MODE` | — | `true` (default) blocks HIGHLY CONFIDENTIAL queries; `false` only warns. Response scrubbing always applies. | `true` |
 
 **Sample `.env` (VPMC Sandbox skeleton — fill the secrets):**
 
@@ -76,6 +78,10 @@ IAS_DEPENDENCY_NAME=SF_DEPENDENCY
 
 All credentials can also be overridden per-request via tool parameters (`data_center`, `auth_user_id`, `auth_password`) for multi-tenant workflows.
 
+**Host allowlist.** A `data_center` override (and `instance_*_dc` in the instance-comparison tools) must be a DC code from `helpers/sf_client.DATA_CENTERS`, the configured `SF_API_HOST`, or a host listed in `SF_ALLOWED_HOSTS`. Only `https://<host>` is accepted — no `http`, path, port, query or embedded credentials. Anything else is rejected before a token is requested, so the Bearer token can never be sent to an arbitrary host.
+
+**Web backend.** The Gemini UI never exposes `data_center`, `auth_user_id`, `auth_password` or the `instance_*_user` / `instance_*_password` parameters to the model, and drops them if the model sends them anyway; those tools always run with the `.env` identity.
+
 ---
 
 ## Authentication Flow (OIDC 2-step via IAS)
@@ -84,7 +90,7 @@ The server authenticates via SAP IAS (Identity Authentication Service) using the
 
 1. **Step 1 — Password grant:** `POST {IAS_HOST}/oauth2/token` with `grant_type=password`, returns an `id_token`.
 2. **Step 2 — JWT-bearer exchange:** `POST {IAS_HOST}/oauth2/token` with `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer`, the `id_token` as assertion and `resource=urn:sap:identity:application:provider:name:{IAS_DEPENDENCY_NAME}`. Returns the SF `access_token`.
-3. The token is **cached per-tenant** with a 60-second safety buffer before expiry. Multi-tenant cache lives in `helpers/credentials._token_cache`.
+3. The token is cached with a 60-second safety buffer before expiry. The cache key is the **effective identity** — `(IAS_HOST, OIDC_CLIENT_ID, user, password fingerprint, API host)` after applying per-request overrides — so different users or hosts never share a token. Concurrent requests for the same key are serialized by a per-key `asyncio.Lock`, so only one IAS round-trip happens. Cache lives in `helpers/credentials._token_cache`.
 
 All subsequent OData calls use `Authorization: Bearer {access_token}`.
 
@@ -102,14 +108,14 @@ sf-mcp-server/
 ├── CLAUDE.md                   # Claude Code project instructions
 │
 ├── helpers/                    # Cross-cutting infrastructure
-│   ├── credentials.py          # OIDC 2-step flow, token cache (per-tenant)
+│   ├── credentials.py          # OIDC 2-step flow, token cache (per identity + host)
 │   ├── credential_store.py     # Pluggable credential storage (env / GCP Secret Manager)
 │   ├── sf_client.py            # Async OData client (DC resolution, Bearer auth, GET/POST/PUT/upsert)
 │   ├── metadata_parser.py      # EDMX/CSDL XML → structured dicts (with SAP annotations)
 │   ├── nl_query_parser.py      # Natural language → OData $filter (no LLM, pattern-based)
 │   ├── template_parser.py      # CSV / Excel template parser for imports
 │   ├── odata_utils.py          # OData helpers (escaping, pagination, etc.)
-│   └── pii_filter.py           # PII redaction layer for tool outputs
+│   └── pii_filter.py           # PII validation + recursive scrubbing (enforced in SFClient.query_odata)
 │
 ├── models/                     # Pydantic v2 models (domain objects)
 │   ├── rule_spec.py            # RuleSpec, RuleCondition, RuleAction, ExecutionNotes
@@ -247,6 +253,8 @@ Tests use `respx` to mock httpx calls — no live SF tenant needed.
 | `httpx.ConnectTimeout` | Network / VPN / firewall blocking IAS or SF API. Default timeouts: 30 s for IAS, 60 s for OData (90 s for full `$metadata`). |
 | `403 Forbidden` on OData calls | The SF user lacks OData API permissions on the entity. Check Admin Center → Manage Permission Roles. |
 | `Unknown data center 'XXX'` | `SF_API_HOST` is neither a known DC code nor a valid URL. Use a full URL or one of the codes in `helpers/sf_client.py`. |
+| `Host 'x' is not an allowed SuccessFactors API host` | The `data_center` override is not a DC code, not `SF_API_HOST`, and not in `SF_ALLOWED_HOSTS`. Add the tenant host to `SF_ALLOWED_HOSTS` if it is legitimate. |
+| `PIIPolicyError` / `SF API Error 403 ... Blocked fields` | The query selects, filters on, or expands a HIGHLY CONFIDENTIAL field/entity (`knowledge/pii_classification.json`). Blocked centrally in `SFClient.query_odata` before any request is sent. |
 
 ---
 

@@ -79,7 +79,7 @@ async def validate_migration_file(
     rows = parsed_csv["rows"]
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
         xml_text = await sf.get_metadata(data_center=api_host, bearer_token=token, entity=entity)
         parsed_meta = parse_metadata_xml(xml_text)
@@ -279,7 +279,7 @@ async def reconcile_data(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=120.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         params: dict[str, str] = {}
@@ -342,7 +342,7 @@ async def generate_purge_file(
     api_host = resolve_api_host(data_center)
 
     async with httpx.AsyncClient(timeout=90.0, follow_redirects=True) as http:
-        token = await get_bearer_token(http, auth_user_id, auth_password)
+        token = await get_bearer_token(http, auth_user_id, auth_password, api_host=api_host)
         sf = SFClient(http)
 
         # First get metadata to know the key fields
