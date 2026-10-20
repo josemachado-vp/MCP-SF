@@ -154,7 +154,8 @@ async def generate_import_template(
             "error": f"Entity '{entity_name}' not found in metadata",
         }
 
-    properties = entity_meta.get("properties", {})
+    # parse_metadata_xml returns properties as a list of dicts; index by name.
+    properties = {p["name"]: p for p in entity_meta.get("properties", [])}
     keys = entity_meta.get("keys", [])
 
     # Filter fields
@@ -212,14 +213,7 @@ async def generate_import_template(
                     pass
 
     # Annotate fields with PII tier info
-    field_names = [f["name"] for f in template_fields]
-    annotated = annotate_template_fields(entity_name, field_names)
-    for tf in template_fields:
-        ann = annotated.get(tf["name"], {})
-        if ann.get("pii_tier"):
-            tf["pii_tier"] = ann["pii_tier"]
-        if ann.get("pii_warning"):
-            tf["pii_warning"] = ann["pii_warning"]
+    annotate_template_fields(entity_name, template_fields)
 
     # Build CSV header line
     csv_headers = [f["name"] for f in template_fields]

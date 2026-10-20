@@ -106,3 +106,14 @@ def test_instance_compare_keeps_required_host_params_only():
 def test_strip_hidden_args():
     args = {"user_id": "u1", "data_center": "https://evil", "auth_password": "x", "instance_a_user": "y"}
     assert strip_hidden_args(args) == {"user_id": "u1"}
+
+
+def test_main_registers_same_tools_as_registry():
+    import asyncio
+
+    from main import mcp
+
+    registered = asyncio.run(mcp.list_tools())
+    registry = get_registry()
+    assert len(registered) == len(registry.tools)
+    assert {t.name for t in registered} == {t.name for t in registry.tools}
