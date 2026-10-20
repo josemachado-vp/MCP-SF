@@ -116,11 +116,10 @@ async def run_go_live_checks(
             try:
                 if check_id == "GL001":
                     # Employees without active job
-                    emp_result = await _sf_query(sf, api_host, token, "EmpEmployment", {
+                    emp_result = await _fetch_all(sf, api_host, token, "EmpEmployment", {
                         "$select": "userId",
-                        "$top": "5000",
                     })
-                    emp_users = {r.get("userId", "") for r in emp_result.get("d", {}).get("results", [])}
+                    emp_users = {r.get("userId", "") for r in emp_result}
                     job_users = {j.get("userId", "") for j in unique_jobs}
                     missing = emp_users - job_users - {""}
                     check_result["affected_count"] = len(missing)
@@ -178,11 +177,10 @@ async def run_go_live_checks(
 
                 elif check_id == "GL020":
                     # Email completeness
-                    email_result = await _sf_query(sf, api_host, token, "PerEmail", {
+                    email_result = await _fetch_all(sf, api_host, token, "PerEmail", {
                         "$select": "personIdExternal",
-                        "$top": "5000",
                     })
-                    email_users = {r.get("personIdExternal", "") for r in email_result.get("d", {}).get("results", [])}
+                    email_users = {r.get("personIdExternal", "") for r in email_result}
                     job_users = {j.get("userId", "") for j in unique_jobs}
                     no_email = job_users - email_users - {""}
                     check_result["affected_count"] = len(no_email)
@@ -215,6 +213,7 @@ async def run_go_live_checks(
     passed = sum(1 for r in results if r["status"] == "pass")
     failed = sum(1 for r in results if r["status"] == "fail")
     warnings = sum(1 for r in results if r["status"] == "warning")
+    errors = sum(1 for r in results if r["status"] == "error")
 
     return {
         "checklist_type": checklist_type,
@@ -222,7 +221,9 @@ async def run_go_live_checks(
         "passed": passed,
         "failed": failed,
         "warnings": warnings,
-        "ready_for_golive": failed == 0,
+        "errors": errors,
+        # A check that errored did not verify anything, so it must block readiness.
+        "ready_for_golive": failed == 0 and errors == 0,
         "checks": results,
         "active_employees_analyzed": len(unique_jobs),
     }

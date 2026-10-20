@@ -81,3 +81,14 @@ def test_annotated_metadata_becomes_description():
     props = upsert.parameters_schema["properties"]
     desc = props["dry_run"].get("description")
     assert isinstance(desc, str) and desc.strip(), f"dry_run.description was {desc!r}"
+
+
+def test_main_registers_same_tools_as_registry():
+    import asyncio
+
+    from main import mcp
+
+    registered = asyncio.run(mcp.list_tools())
+    registry = get_registry()
+    assert len(registered) == len(registry.tools)
+    assert {t.name for t in registered} == {t.name for t in registry.tools}

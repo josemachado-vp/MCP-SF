@@ -1,7 +1,7 @@
 """
 SAP SuccessFactors Assistant MCP Server.
 
-Provides 53 tools organized in thirteen categories for SF consultants
+Provides 52 tools organized in fifteen categories for SF consultants
 and implementors:
 
 - Discovery (4): Entity metadata, picklists, OData queries
@@ -153,7 +153,7 @@ from tools.workbook_generator import (
 mcp = FastMCP(
     name="SF Assistant MCP",
     instructions=(
-        "This server provides 53 tools for SAP SuccessFactors consultants and implementors. "
+        "This server provides 52 tools for SAP SuccessFactors consultants and implementors. "
         "It covers employee data queries, organizational structure, business rules, "
         "data import, analytics, instance comparison, auditing, documentation generation, "
         "migration tooling, MDF objects, go-live validation, multi-country support, and workbook generation.\n\n"
